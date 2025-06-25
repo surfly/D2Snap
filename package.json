@@ -4,5 +4,9 @@
   "type": "module",
   "devDependencies": {
     "esbuild": "^0.25.4"
+  },
+  "dependencies": {
+    "turndown": "^7.2.0",
+    "turndown-plugin-gfm": "^1.0.2"
   }
 }
