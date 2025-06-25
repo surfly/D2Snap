@@ -271,3 +271,59 @@ export async function takeSnapshot(
         }
     };
 }
+
+export async function takeAdaptiveSnapshot(
+    dom: TDOM,
+    maxTokens: number = 4096,
+    maxIterations: number = 5,
+    options: TOptions = {}
+): Promise<TSnapshot & {
+    parameters: {
+        k: number; l: number; m: number;
+        adaptiveIterations: number;
+    }
+}> {
+    /**
+     * Let S be a positive natural number denoting a DOM size (in B):
+     * M := 1,000,000                   magnitude (MB)
+     * k := ⌊e^(2 / M * S)⌉             exponentially increase fold from 1 (~10 at M)
+     * l := ⌊98 * e^(-(4 / M) * S) + 2⌉ exponentially decrease word keep from 100 (~2 beyond magnitude)
+     * m := e^(-(4 / M) * S)            exponentially decrease attribute keep
+     */
+
+    const S = findDownsamplingRoot(dom).outerHTML.length;
+    const M = 1000000;
+
+    const computeParameters = S => {
+        return {
+            k: Math.round(Math.E**(2 / M * S)),
+            l: Math.round(98 * Math.E**(-(4 / M) * S) + 2),
+            m: Math.E**(-(4 / M) * S)
+        };
+    };
+
+    let i = 0;
+    let parameters, snapshot;
+    do {
+        i++;
+
+        // stretch by i^(1/4)
+        parameters = computeParameters(S * i**0.75);
+        snapshot = await takeSnapshot(dom, parameters.k, parameters.l, parameters.m, options);
+
+        i++;
+    } while(snapshot.estimatedTokens > maxTokens && i < maxIterations);
+
+    if(i === maxIterations)
+        throw new RangeError("Unable to create snapshot below given token threshold");
+
+    return {
+        ...snapshot,
+
+        parameters: {
+            ...parameters,
+
+            adaptiveIterations: i
+        }
+    };
+}
