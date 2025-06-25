@@ -5,3 +5,6 @@
 node_modules/
 
 test/*.actual.html
+
+eval/results.*.json
+eval/summary.json
