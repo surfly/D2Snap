@@ -234,7 +234,7 @@ export async function takeSnapshot(
         dom,
         virtualDom,
         NodeFilter.SHOW_ELEMENT,
-        (node: HTMLElement) => snapElementNode(node, k)
+        (node: HTMLElement) => snapElementNode(node)
     );
 
     // Container element nodes

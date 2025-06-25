@@ -13,7 +13,10 @@ export enum Node {
 }
 
 export type TDepth = { depth: number; };
-export type TTextNode = Node & { textContent: string; };
+export type TTextNode = Node & {
+    nodeType: number;
+    textContent: string;
+};
 export type TDepthElement = HTMLElement & TDepth;
 
 export type TDOM = Document;
