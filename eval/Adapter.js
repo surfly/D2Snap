@@ -62,7 +62,7 @@ export class OpenAIAdapter {
                 store: false
             });
 
-        if(res.error) throw llmRes.error;
+        if(res.error) throw res.error;
 
         const resText = res
             .output[0]
