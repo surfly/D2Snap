@@ -5,6 +5,11 @@ import { zodTextFormat } from "openai/helpers/zod";
 import { z } from "zod";
 
 
+const InteractiveElementTarget = z.object({
+    elementDescription: z.string()
+});
+
+
 export class OpenAIAdapter {
     #model;
     #endpoint;
@@ -26,7 +31,7 @@ export class OpenAIAdapter {
         return result.id;
     }
 
-    async request(instructions, inputTask, inputSnapshot, outputSchema) {
+    async request(instructions, inputTask, inputSnapshot, interactiveElementTargetSchema) {
         if(!inputSnapshot?.type) throw new SyntaxError("Invalid snapshot argument");
 
         const res = await this.#endpoint.responses
@@ -54,9 +59,14 @@ export class OpenAIAdapter {
                 text: {
                     format: zodTextFormat(
                         z.object({
-                            interactive_elements: z.array(outputSchema)
+                            interactiveElements: z.array(
+                                z.object({
+                                    ...InteractiveElementTarget.shape,
+                                    ...interactiveElementTargetSchema.shape
+                                })
+                            ),
                         }),
-                        "interactive_elements"
+                        "interactiveElements"
                     )
                 },
                 store: false

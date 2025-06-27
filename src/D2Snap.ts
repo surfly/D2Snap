@@ -180,24 +180,14 @@ export async function takeSnapshot(
             ?.removeChild(elementNode);
     }
 
-
     const originalSize = dom.documentElement.outerHTML.length;
     const partialDom: HTMLElement = findDownsamplingRoot(dom);
-    const virtualDom = partialDom.cloneNode(true) as HTMLElement;
-
-    // Prepare
-    await traverseDom<Comment>(
-        dom,
-        virtualDom,
-        NodeFilter.SHOW_COMMENT,
-        node => node.parentNode?.removeChild(node)
-    );
 
     let n = 0;
     optionsWithDefaults.assignUniqueIDs
         && await traverseDom<Element>(
             dom,
-            virtualDom,
+            partialDom,
             NodeFilter.SHOW_ELEMENT,
             node => {
                 if(
@@ -210,6 +200,16 @@ export async function takeSnapshot(
                 node.setAttribute(CONFIG.uniqueIDAttribute, (n++).toString())
             }
         );
+
+    const virtualDom = partialDom.cloneNode(true) as HTMLElement;
+
+    // Prepare
+    await traverseDom<Comment>(
+        dom,
+        virtualDom,
+        NodeFilter.SHOW_COMMENT,
+        node => node.parentNode?.removeChild(node)
+    );
 
     // D2Snap implementation harnessing the power of the TreeWalkers API:
 

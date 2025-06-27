@@ -12,7 +12,6 @@ const ARGS = {
     splitSize: parseInt(parseOption("--split") ?? "0") || Infinity,
     verbose: parseFlag("--verbose")
 };
-const INSTRUCTIONS = loadInstructions();
 const DATASET = loadDataset();
 const REFERENCE = await loadReference();
 const OPENAI_ADAPTER = new OpenAIAdapter(ARGS.model, process.env.OPENAI_API_KEY);
@@ -24,8 +23,8 @@ function print(message, always = false) {
     console.log(`\x1b[2m${message}\x1b[0m`);
 }
 
-function loadInstructions() {
-    return readFileSync(join(import.meta.dirname, "dataset", "instructions.md")).toString();
+function loadInstructions(name = "prefix") {
+    return readFileSync(join(import.meta.dirname, "dataset", `instructions.${name}.md`)).toString();
 }
 
 function loadDataset() {
@@ -51,7 +50,7 @@ export async function runEvaluation(
     snapshotLoaderCb,
     resultsAnalysisCb,
     outputSchema,
-    schemaInstructions = ""
+    instructionsSuffix
 ) {
     print("Evaluating...", true);
     const t0 = Date.now();
@@ -72,14 +71,20 @@ export async function runEvaluation(
         ].join("\n"));
 
         const res = await OPENAI_ADAPTER.request(
-            [ INSTRUCTIONS, schemaInstructions ],
+            [
+                loadInstructions()
+            ].concat(
+                instructionsSuffix
+                    ? [ loadInstructions(`suffix.${instructionsSuffix}`) ]
+                    : []
+            ),
             record.task,
             snapshotData,
             outputSchema
         );
 
         const autoAnalysisWasSuccessful = await resultsAnalysisCb(
-            res.interactive_elements,
+            res.interactiveElements,
             REFERENCE.get(record.id),
             snapshotData.data,
             snapshotData.rawData
@@ -88,7 +93,7 @@ export async function runEvaluation(
             id: record.id,
             snapshotSize: snapshotData.size,
             estimatedTokens: snapshotData.estimatedTokens,
-            response: res.interactive_elements,
+            response: res.interactiveElements,
             success: autoAnalysisWasSuccessful
         };
 
