@@ -1,24 +1,50 @@
 import { readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 
-import { OpenAIAdapter } from "./Adapter.js";
+import { OpenAIAdapter, AnthropicAdapter } from "./Adapter.js";
 
 
 const RAW_ARGS = [ undefined, ...process.argv.slice(2) ];
 const parseFlag = arg => !!~RAW_ARGS.indexOf(arg);
 const parseOption = arg => RAW_ARGS[RAW_ARGS.indexOf(arg) + 1];
-const ARGS = {
-    model: parseOption("--model") ?? "gpt-4.1",
-    splitSize: parseInt(parseOption("--split") ?? "0") || Infinity,
-    verbose: parseFlag("--verbose")
-};
+
 const DATASET = loadDataset();
 const REFERENCE = await loadReference();
-const OPENAI_ADAPTER = new OpenAIAdapter(ARGS.model, process.env.OPENAI_API_KEY);
+const { API_ADAPTER, PROVIDER, MODEL } = (() => {
+    const provider = parseOption("--provider") ?? "anthropic";
+
+    let model, adapter;
+    switch(provider) {
+        case "openai":
+            model = parseOption("--model") ?? "gpt-4o";
+            adapter = new OpenAIAdapter(
+                model,
+                process.env.OPENAI_API_KEY
+            );
+
+            break;
+        case "anthropic":
+            model = parseOption("--model") ?? "claude-3-7-sonnet-latest";
+            adapter = new AnthropicAdapter(
+                model,
+                process.env.ANTHROPIC_API_KEY
+            );
+
+            break;
+        default:
+            throw new SyntaxError("Specify a valid model provider");
+    }
+
+    return {
+        API_ADAPTER: adapter,
+        PROVIDER: provider,
+        MODEL: model
+    }
+})();
 
 
 function print(message, always = false) {
-    if(!always && !ARGS.verbose) return;
+    if(!always && !parseFlag("--verbose")) return;
 
     console.log(`\x1b[2m${message}\x1b[0m`);
 }
@@ -53,24 +79,26 @@ export async function runEvaluation(
     instructionsSuffix
 ) {
     print("Evaluating...", true);
+
     const t0 = Date.now();
 
     const results = [];
 
     const abbrev = (str, limit = 100) => (str.length > limit) ? `${str.slice(0, limit)}${(str.length > limit) ? "…" : ""}` : str;
 
-    for(let i = 0; i < Math.min(DATASET.length, ARGS.splitSize); i++) {
+    const splitSize = parseInt(parseOption("--split") ?? "0") || Infinity;
+    for(let i = 0; i < Math.min(DATASET.length, splitSize); i++) {
         const record = DATASET[i];
 
         const snapshotData = await snapshotLoaderCb(record.id);
-        const snapshotDataPrint = snapshotData.data.replace(/\s+/g, " ")
+        const snapshotDataPrint = snapshotData.path ?? snapshotData.data.replace(/\s+/g, " ");
         print(`(${i}) ${record.url}`, true);
         print([
             record.task,
             abbrev(snapshotDataPrint, 500)
         ].join("\n"));
 
-        const res = await OPENAI_ADAPTER.request(
+        const res = await API_ADAPTER.request(
             [
                 loadInstructions()
             ].concat(
@@ -102,7 +130,11 @@ export async function runEvaluation(
 
     const resultsFilePath = join(import.meta.dirname, resultsFileName.replace(/(\.json)?$/i, ".json"));
 
-    writeFileSync(resultsFilePath, JSON.stringify(results, null, 2));
+    writeFileSync(resultsFilePath, JSON.stringify({
+        endpoint: `${PROVIDER}: ${MODEL}`,
+        date: new Date().toISOString(),
+        results
+    }, null, 2));
 
     print(`...done (${Math.round((Date.now() - t0) / 1000)}s).`, true);
 }

@@ -8,3 +8,4 @@ test/*.actual.html
 
 eval/results.*.json
 eval/summary.json
+eval/D2Snap-results/

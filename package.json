@@ -9,20 +9,23 @@
     "build:browser:watch": "npm run build:browser -- --watch",
     "build": "npm run build:lib && npm run build:browser",
     "test": "node ./test/test.js",
-    "eval:gui": "node --env-file=.env ./eval/eval.gui.js",
+    "eval-util": "node --no-warnings --env-file=.env",
+    "eval:gui": "npm run eval-util -- ./eval/eval.gui.js",
     "eval:gui:single": "npm run eval:gui -- --split 1 --verbose",
-    "eval:dom": "node --env-file=.env ./eval/eval.dom.js",
+    "eval:dom": "npm run eval-util -- ./eval/eval.dom.js",
     "eval:dom:single": "npm run eval:dom -- --split 1 --verbose",
-    "eval:D2Snap": "node --env-file=.env ./eval/eval.D2Snap.js",
+    "eval:D2Snap": "npm run eval-util -- ./eval/eval.D2Snap.js",
     "eval:D2Snap:single": "npm run eval:D2Snap -- --split 1 --verbose",
     "eval": "npm run eval:gui && npm run eval:dom && npm run eval:D2Snap && npm run summarize",
     "summarize": "node ./eval/summarize.js"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.55.0",
     "esbuild": "^0.25.4",
     "jsdom": "^24.0.0",
     "openai": "^5.6.0",
-    "zod": "^3.25.67"
+    "zod": "^3.25.67",
+    "zod-to-json-schema": "^3.24.6"
   },
   "dependencies": {
     "turndown": "^7.2.0",
