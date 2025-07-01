@@ -3,7 +3,12 @@ import { join } from "path";
 
 
 const EVALS = [
-    // TODO
+    "results.gui",
+    "results.dom",
+    "results.D2Snap.adaptive",
+    "results.D2Snap.2-16-375",
+    "results.D2Snap.5-8-75",
+    "results.D2Snap.inf-4-1"
 ];
 
 
@@ -32,8 +37,11 @@ await Promise.all(
             summary[resultsFileName].meanSnapshotSize = mean("meanSnapshotSize", "snapshotSize");
             summary[resultsFileName].meanEstimatedTokens = mean("meanEstimatedTokens", "estimatedTokens");
         });
-    })
+    });
 );
 
 
-writeFileSync(join(import.meta.dirname, "summary.json"), JSON.stringify(summary, null, 2));
+writeFileSync(
+    join(import.meta.dirname, "summary.json"),
+    JSON.stringify(summary, null, 2)
+);

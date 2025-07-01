@@ -1,6 +1,6 @@
 # D2Snap
 
-**D2Snap** is a first-of-kind DOM downsampling algorithm, designed for use with LLM-based web agents.  
+**D2Snap** is a first-of-its-kind DOM downsampling algorithm, designed for use with LLM-based web agents.  
 
 ![Example of downsampling on an image (top) and a DOM (bottom) instance](./.github/downsampling.png)
 
