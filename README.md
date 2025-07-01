@@ -10,7 +10,7 @@
 npm install
 ```
 
-> Provide OpenAI API key to .env (compare [example](./.env.example)).
+> Provide LLM API provider key(s) to .env (compare [example](./.env.example)).
 
 ## 
 
@@ -21,7 +21,7 @@ npm run eval
 ```
 
 ``` console
-npm run eval -- --split 3 --model gpt-4.1 --verbose
+npm run eval:D2Snap -- --split 3 --verbose --provider openai --model gpt-4o
 ```
 
 ### Build

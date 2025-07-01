@@ -11,7 +11,7 @@ const parseOption = arg => RAW_ARGS[RAW_ARGS.indexOf(arg) + 1];
 const DATASET = loadDataset();
 const REFERENCE = await loadReference();
 const { API_ADAPTER, PROVIDER, MODEL } = (() => {
-    const provider = parseOption("--provider") ?? "anthropic";
+    const provider = parseOption("--provider") ?? "openai";
 
     let model, adapter;
     switch(provider) {

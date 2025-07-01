@@ -1049,19 +1049,23 @@
         "data-*": 0.1,
         content: 0.1,
         "http-equiv": 0.1,
-        "data-uid": 1
+        "data-uid": 1,
+        "DATA-AIE": 1
       }
     }
   };
 
   // src/D2Snap.ts
-  var TURNDOWN_KEEP_TAG_NAMES = ["A"];
+  var TURNDOWN_KEEP_TAG_NAMES = ["a"];
   var TURNDOWN_SERVICE = new turndown_browser_es_default({
     headingStyle: "atx",
     bulletListMarker: "-",
     codeBlockStyle: "fenced"
   });
-  TURNDOWN_SERVICE.keep(TURNDOWN_KEEP_TAG_NAMES);
+  TURNDOWN_SERVICE.addRule("keep", {
+    filter: TURNDOWN_KEEP_TAG_NAMES,
+    replacement: (_, node) => node.outerHTML
+  });
   TURNDOWN_SERVICE.use(gfm);
   var KEEP_LINE_BREAK_MARK = "@@@";
   function isElementType(type, elementNode) {
@@ -1156,17 +1160,10 @@
     }
     const originalSize = dom.documentElement.outerHTML.length;
     const partialDom = findDownsamplingRoot(dom);
-    const virtualDom = partialDom.cloneNode(true);
-    await traverseDom(
-      dom,
-      virtualDom,
-      128 /* SHOW_COMMENT */,
-      (node) => node.parentNode?.removeChild(node)
-    );
     let n = 0;
     optionsWithDefaults.assignUniqueIDs && await traverseDom(
       dom,
-      virtualDom,
+      partialDom,
       1 /* SHOW_ELEMENT */,
       (node) => {
         if (![
@@ -1175,6 +1172,13 @@
         ].includes(node.tagName.toLowerCase())) return;
         node.setAttribute(config_default.uniqueIDAttribute, (n++).toString());
       }
+    );
+    const virtualDom = partialDom.cloneNode(true);
+    await traverseDom(
+      dom,
+      virtualDom,
+      128 /* SHOW_COMMENT */,
+      (node) => node.parentNode?.removeChild(node)
     );
     await traverseDom(
       dom,
@@ -1193,7 +1197,7 @@
       dom,
       virtualDom,
       1 /* SHOW_ELEMENT */,
-      (node) => snapElementNode(node, k)
+      (node) => snapElementNode(node)
     );
     await traverseDom(
       dom,

@@ -132,7 +132,7 @@ export class AnthropicAdapter {
                 model: this.#model,
                 system: instructions
                     .concat([
-                        `Respond only with a JSON according to the following schema:\n\n${
+                        `Respond only with a valid JSON which is according to the following schema:\n\n${
                             JSON.stringify(
                                 zodToJsonSchema(schema),
                                 null,

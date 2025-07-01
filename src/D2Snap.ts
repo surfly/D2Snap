@@ -10,13 +10,16 @@ import CONFIG from "./config.json" with { type: "json" };
 import RATING from "./rating.json" with { type: "json" };
 
 
-const TURNDOWN_KEEP_TAG_NAMES = [ "A" ];
+const TURNDOWN_KEEP_TAG_NAMES = [ "a" ];
 const TURNDOWN_SERVICE = new TurndownService({
     headingStyle: "atx",
     bulletListMarker: "-",
     codeBlockStyle: "fenced",
 });
-TURNDOWN_SERVICE.keep(TURNDOWN_KEEP_TAG_NAMES);
+TURNDOWN_SERVICE.addRule("keep", {
+    filter: TURNDOWN_KEEP_TAG_NAMES,
+    replacement: (_, node) => node.outerHTML
+});
 TURNDOWN_SERVICE.use(turndownPluginGfm.gfm)
 const KEEP_LINE_BREAK_MARK = "@@@";
 
@@ -286,7 +289,7 @@ export async function takeAdaptiveSnapshot(
     /**
      * Let S be a positive natural number denoting a DOM size (in B):
      * M := 1,000,000                   magnitude (MB)
-     * k := ⌊e^(2 / M * S)⌉             exponentially increase fold from 1 (~10 at M)
+     * k := ⌊e^((2 / M) * S)⌉           exponentially increase fold from 1 (~10 at M)
      * l := ⌊98 * e^(-(4 / M) * S) + 2⌉ exponentially decrease word keep from 100 (~2 beyond magnitude)
      * m := e^(-(4 / M) * S)            exponentially decrease attribute keep
      */
@@ -296,7 +299,7 @@ export async function takeAdaptiveSnapshot(
 
     const computeParameters = S => {
         return {
-            k: Math.round(Math.E**(2 / M * S)),
+            k: Math.round(Math.E**((2 / M) * S)),
             l: Math.round(98 * Math.E**(-(4 / M) * S) + 2),
             m: Math.E**(-(4 / M) * S)
         };
