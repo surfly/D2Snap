@@ -91,6 +91,8 @@ export async function runEvaluation(
     for(let i = 0; i < Math.min(DATASET.length, splitSize); i++) {
         const record = DATASET[i];
 
+        const ti0 = Date.now();
+ 
         const snapshotData = await snapshotLoaderCb(record.id);
         const snapshotDataPrint = snapshotData.path ?? snapshotData.data.replace(/\s+/g, " ");
         print(`(${i}) ${record.url}`, true);
@@ -99,31 +101,41 @@ export async function runEvaluation(
             abbrev(snapshotDataPrint, 500)
         ].join("\n"));
 
-        const res = await API_ADAPTER.request(
-            [
-                loadInstructions()
-            ].concat(
-                instructionsSuffix
-                    ? [ loadInstructions(`suffix.${instructionsSuffix}`) ]
-                    : []
-            ),
-            record.task,
-            snapshotData,
-            outputSchema
-        );
+        let llmResponse;
+        let autoAnalysisWasSuccessful = false;
+        try {
+            const res = await API_ADAPTER.request(
+                [
+                    loadInstructions()
+                ].concat(
+                    instructionsSuffix
+                        ? [ loadInstructions(`suffix.${instructionsSuffix}`) ]
+                        : []
+                ),
+                record.task,
+                snapshotData,
+                outputSchema
+            );
 
-        const autoAnalysisWasSuccessful = await resultsAnalysisCb(
-            res.interactiveElements,
-            REFERENCE.get(record.id),
-            snapshotData.data,
-            snapshotData.rawData
-        );
+            llmResponse = res.interactiveElements;
+
+            autoAnalysisWasSuccessful = await resultsAnalysisCb(
+                res.interactiveElements,
+                REFERENCE.get(record.id),
+                snapshotData.data,
+                snapshotData.rawData
+            );
+        } catch(err) {
+            llmResponse = err?.message ?? "Error";
+        }
+
         const result = {
             id: record.id,
             snapshotSize: snapshotData.size,
             estimatedTokens: snapshotData.estimatedTokens,
-            response: res.interactiveElements,
-            success: autoAnalysisWasSuccessful
+            response: llmResponse,
+            success: autoAnalysisWasSuccessful,
+            time: Math.round(Date.now() - ti0)
         };
 
         results.push(result);

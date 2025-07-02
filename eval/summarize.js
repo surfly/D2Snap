@@ -24,7 +24,8 @@ await Promise.all(
             failure: 0,
             successRate: 0.0,
             meanSnapshotSize: 0.0,
-            meanEstimatedTokens: 0.0
+            meanEstimatedTokens: 0.0,
+            meanTime: 0.0
         };
         results.forEach((result, i) => {
             const mean = (key1, key2) => {
@@ -36,6 +37,7 @@ await Promise.all(
             summary[resultsFileName].successRate = mean("successRate", "success");
             summary[resultsFileName].meanSnapshotSize = mean("meanSnapshotSize", "snapshotSize");
             summary[resultsFileName].meanEstimatedTokens = mean("meanEstimatedTokens", "estimatedTokens");
+            summary[resultsFileName].time = mean("meanTime", "time");
         });
     });
 );
