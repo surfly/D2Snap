@@ -4,22 +4,24 @@ import { TDOM } from "./types";
 import { JSDOM } from "jsdom";
 
 
-function dynamicizeDOM(serialisedDOM: string): TDOM {
-    const syntheticDOM = new JSDOM(serialisedDOM);
+function dynamicizeDOM(domOrSerialisedDOM: TDOM|string): TDOM {
+    if(typeof(domOrSerialisedDOM) !== "string") return domOrSerialisedDOM;
 
-    return syntheticDOM.window.document;
+    const dynamicDOM = new JSDOM(domOrSerialisedDOM);
+
+    return dynamicDOM.window.document;
 }
 
 export function takeSnapshot(
-    serialisedDOM: string,
+    domOrSerialisedDOM: TDOM|string,
     ...args: Parameters<typeof _takeSnapshot> extends [ unknown, ...infer T ] ? T : never
 ) {
-    return _takeSnapshot(dynamicizeDOM(serialisedDOM), ...args);
+    return _takeSnapshot(dynamicizeDOM(domOrSerialisedDOM), ...args);
 }
 
 export function takeAdaptiveSnapshot(
-    serialisedDOM: string,
+    domOrSerialisedDOM: TDOM|string,
     ...args: Parameters<typeof _takeAdaptiveSnapshot> extends [ unknown, ...infer T ] ? T : never
 ) {
-    return _takeAdaptiveSnapshot(dynamicizeDOM(serialisedDOM), ...args);
+    return _takeAdaptiveSnapshot(dynamicizeDOM(domOrSerialisedDOM), ...args);
 }

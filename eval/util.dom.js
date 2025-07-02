@@ -1,8 +1,8 @@
 import { JSDOM } from "jsdom";
 
 
-export const analyzeDOMTargets = (res, reference, _, rawSnapshotData) => {
-    const { document } = new JSDOM(rawSnapshotData).window;
+export const analyzeDOMTargets = (res, reference, _, rawDOM) => {
+    const { document } = new JSDOM(rawDOM).window;
 
     for(let trajectory of reference.trajectories) {
         if(res.length < trajectory.length) continue;
@@ -16,7 +16,6 @@ export const analyzeDOMTargets = (res, reference, _, rawSnapshotData) => {
                     targetElement = document.documentElement.querySelector(resElement.cssSelector);
                 } catch { /* */ }
                 if(!targetElement) continue;
-
                 const validTargetElements = [
                     targetElement,
                     targetElement?.parentElement,
@@ -29,7 +28,7 @@ export const analyzeDOMTargets = (res, reference, _, rawSnapshotData) => {
                     .filter(element => !!element);
                 if(
                     validTargetElements
-                        .map(validTargetElement => validTargetElement.matches(referenceElement.cssSelector))
+                        .map(validTargetElement => validTargetElement.matches(referenceElement.css_selector))
                         .includes(true)
                 ) {
                     matchesElement = true;

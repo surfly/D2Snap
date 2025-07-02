@@ -1050,7 +1050,7 @@
         content: 0.1,
         "http-equiv": 0.1,
         "data-uid": 1,
-        "DATA-AIE": 1
+        "data-aie": 1
       }
     }
   };

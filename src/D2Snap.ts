@@ -200,7 +200,7 @@ export async function takeSnapshot(
                     ].includes(node.tagName.toLowerCase())
                 ) return;
 
-                node.setAttribute(CONFIG.uniqueIDAttribute, (n++).toString())
+                node.setAttribute(CONFIG.uniqueIDAttribute, (n++).toString());
             }
         );
 

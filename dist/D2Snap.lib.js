@@ -208,7 +208,7 @@ var rating_default = {
       content: 0.1,
       "http-equiv": 0.1,
       "data-uid": 1,
-      "DATA-AIE": 1
+      "data-aie": 1
     }
   }
 };
@@ -412,15 +412,16 @@ async function takeAdaptiveSnapshot(dom, maxTokens = 4096, maxIterations = 5, op
 
 // src/D2Snap.lib.ts
 import { JSDOM } from "jsdom";
-function dynamicizeDOM(serialisedDOM) {
-  const syntheticDOM = new JSDOM(serialisedDOM);
-  return syntheticDOM.window.document;
+function dynamicizeDOM(domOrSerialisedDOM) {
+  if (typeof domOrSerialisedDOM !== "string") return domOrSerialisedDOM;
+  const dynamicDOM = new JSDOM(domOrSerialisedDOM);
+  return dynamicDOM.window.document;
 }
-function takeSnapshot2(serialisedDOM, ...args) {
-  return takeSnapshot(dynamicizeDOM(serialisedDOM), ...args);
+function takeSnapshot2(domOrSerialisedDOM, ...args) {
+  return takeSnapshot(dynamicizeDOM(domOrSerialisedDOM), ...args);
 }
-function takeAdaptiveSnapshot2(serialisedDOM, ...args) {
-  return takeAdaptiveSnapshot(dynamicizeDOM(serialisedDOM), ...args);
+function takeAdaptiveSnapshot2(domOrSerialisedDOM, ...args) {
+  return takeAdaptiveSnapshot(dynamicizeDOM(domOrSerialisedDOM), ...args);
 }
 export {
   takeAdaptiveSnapshot2 as takeAdaptiveSnapshot,
