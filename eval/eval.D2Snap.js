@@ -1,82 +1,32 @@
-import { rmSync, mkdirSync, readFileSync, writeFileSync } from "fs";
+import { Worker } from "worker_threads";
 import { join } from "path";
 
-import { JSDOM } from "jsdom";
-import { z } from "zod";
 
-import { runEvaluation } from "./eval.js";
-import { analyzeDOMTargets } from "./util.dom.js";
+function runEvaluationInWorker(identifier, snapshotType, ...args) {
+    return new Promise((resolve, reject) => {
+        const worker = new Worker(join(import.meta.dirname, "eval.D2Snap.worker.js"), {
+            argv: process.argv,
+            workerData: {
+                identifier,
+                snapshotType,
+                args
+            }
+        });
 
-import { takeAdaptiveSnapshot, takeSnapshot } from "../dist/D2Snap.lib.js";
-
-
-const DOMInteractiveElementTarget = z.object({
-    cssSelector: z.string()
-});
-
-const UNIQUE_ID_ATTR = "data-uid";
-const D2SNAP_RESULTS_DIR = join(import.meta.dirname, "D2Snap-results");
-rmSync(D2SNAP_RESULTS_DIR, {
-    recursive: true,
-    force: true
-});
-mkdirSync(D2SNAP_RESULTS_DIR);
-
-
-const loadDOMRecord = async (id, takeSnapshotCb, name) => {
-    const originalDOM = readFileSync(join(import.meta.dirname, "dataset", "dom", `${id}.html`)).toString();
-    const { document } = new JSDOM(originalDOM).window;
-
-    const walker = document.createTreeWalker(document.body ?? document, 1);
-    let n = 0;
-    let node = walker.firstChild();
-    while(node) {
-        node.setAttribute(UNIQUE_ID_ATTR, (n++).toString());
-
-        node = walker.nextNode();
-    }
-    const downsampledDOMSnapshot = await takeSnapshotCb(document);
-
-    writeFileSync(join(D2SNAP_RESULTS_DIR, `${id}.${name}`), downsampledDOMSnapshot.serializedHtml);
-
-    return {
-        type: "text",
-        data: downsampledDOMSnapshot.serializedHtml,
-        rawData: document.documentElement.outerHTML,
-        size: downsampledDOMSnapshot.meta.snapshotSize,
-        estimatedTokens: Math.round(downsampledDOMSnapshot.serializedHtml.length / 4)   // according to https://platform.openai.com/tokenizer
-    };
-};
+        worker.on("message", resolve);
+        worker.on("error", reject);
+        worker.on("exit", code => {
+            code
+                ? reject(new Error(`Worker stopped with exit code ${code}`))
+                : resolve();
+        });
+    });
+}
 
 
-await runEvaluation(
-    "D2Snap.adaptive",
-    async id => loadDOMRecord(id, dom => takeAdaptiveSnapshot(dom, 4096, 5), "D2Snap.adaptive"),
-    analyzeDOMTargets,
-    DOMInteractiveElementTarget,
-    "dom"
-);
-
-await runEvaluation(
-    "D2Snap.2-6-375",
-    async id => loadDOMRecord(id, dom => takeSnapshot(dom, 2, 6, 0.375), "D2Snap.2-6-375"),
-    analyzeDOMTargets,
-    DOMInteractiveElementTarget,
-    "dom"
-);
-
-await runEvaluation(
-    "D2Snap.5-8-75",
-    async id => loadDOMRecord(id, dom => takeSnapshot(dom, 5, 8, 0.75), "D2Snap.5-8-75"),
-    analyzeDOMTargets,
-    DOMInteractiveElementTarget,
-    "dom"
-);
-
-await runEvaluation(
-    "D2Snap.inf-4-1",
-    async id => loadDOMRecord(id, dom => takeSnapshot(dom, Infinity, 4, 1.0), "D2Snap.inf-4-1"),
-    analyzeDOMTargets,
-    DOMInteractiveElementTarget,
-    "dom"
-);
+await Promise.all([
+    runEvaluationInWorker("D2Snap.adaptive", "takeAdaptiveSnapshot", 4096, 5),
+    runEvaluationInWorker("D2Snap.2-6-375", "takeSnapshot", 2, 6, 0.375),
+    runEvaluationInWorker("D2Snap.5-8-75", "takeSnapshot", 5, 8, 0.75),
+    runEvaluationInWorker("D2Snap.inf-4-1", "takeSnapshot", Infinity, 4, 1.0)
+]);
