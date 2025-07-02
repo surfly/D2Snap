@@ -13,7 +13,7 @@ const GUIInteractiveElementTarget = z.object({
 
 
 runEvaluation(
-    "results.gui",
+    "gui",
     (id) => {
         const path = join(import.meta.dirname, "dataset", "gui", `${id}.png`);
         const data = readFileSync(path);

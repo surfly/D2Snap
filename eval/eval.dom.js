@@ -16,7 +16,7 @@ const MAX_SNAPSHOT_SIZE_B = 2**13;
 
 // NOTE: Cut-off at maximum context length
 runEvaluation(
-    "results.dom",
+    "dom",
     async (id) => {
         const rawDOMSnapshot = readFileSync(join(import.meta.dirname, "dataset", "dom", `${id}.html`)).toString();
         const domSnapshot = rawDOMSnapshot.slice(0, MAX_SNAPSHOT_SIZE_B);

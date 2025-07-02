@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "fs";
+import { mkdirSync, readFileSync, writeFileSync } from "fs";
 import { join } from "path";
 
 import { OpenAIAdapter, AnthropicAdapter } from "./Adapter.js";
@@ -8,6 +8,7 @@ const RAW_ARGS = [ undefined, ...process.argv.slice(2) ];
 const parseFlag = arg => !!~RAW_ARGS.indexOf(arg);
 const parseOption = arg => RAW_ARGS[RAW_ARGS.indexOf(arg) + 1];
 
+const RESULTS_DIR_PATH = join(import.meta.dirname, "results");
 const DATASET = loadDataset();
 const REFERENCE = await loadReference();
 const { API_ADAPTER, PROVIDER, MODEL } = (() => {
@@ -72,13 +73,13 @@ async function loadReference() {
 
 
 export async function runEvaluation(
-    resultsFileName,
+    identifier,
     snapshotLoaderCb,
     resultsAnalysisCb,
     outputSchema,
     instructionsSuffix
 ) {
-    print("Evaluating...", true);
+    print(`Evaluating ${identifier}...`, true);
 
     const t0 = Date.now();
 
@@ -128,8 +129,10 @@ export async function runEvaluation(
         results.push(result);
     }
 
-    const resultsFilePath = join(import.meta.dirname, resultsFileName.replace(/(\.json)?$/i, ".json"));
-
+    const resultsFilePath = join(RESULTS_DIR_PATH, identifier.replace(/(\.json)?$/i, ".json"));
+    mkdirSync(RESULTS_DIR_PATH, {
+        recursive: true
+    });
     writeFileSync(resultsFilePath, JSON.stringify({
         endpoint: `${PROVIDER}: ${MODEL}`,
         date: new Date().toISOString(),

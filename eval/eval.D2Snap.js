@@ -50,33 +50,33 @@ const loadDOMRecord = async (id, takeSnapshotCb, name) => {
 
 
 await runEvaluation(
-    "results.D2Snap.adaptive",
-    async id => loadDOMRecord(id, dom => takeAdaptiveSnapshot(dom, 4096, 5), "results.D2Snap.adaptive"),
-    analyzeDOMTargets,
-    DOMInteractiveElementTarget,
-    "dom"
-);
-
-/* await runEvaluation(
-    "results.D2Snap.2-6-375",
-    async id => loadDOMRecord(id, dom => takeSnapshot(dom, 2, 6, 0.375), "results.D2Snap.2-6-375"),
+    "D2Snap.adaptive",
+    async id => loadDOMRecord(id, dom => takeAdaptiveSnapshot(dom, 4096, 5), "D2Snap.adaptive"),
     analyzeDOMTargets,
     DOMInteractiveElementTarget,
     "dom"
 );
 
 await runEvaluation(
-    "results.D2Snap.5-8-75",
-    async id => loadDOMRecord(id, dom => takeSnapshot(dom, 5, 8, 0.75), "results.D2Snap.5-8-75"),
+    "D2Snap.2-6-375",
+    async id => loadDOMRecord(id, dom => takeSnapshot(dom, 2, 6, 0.375), "D2Snap.2-6-375"),
     analyzeDOMTargets,
     DOMInteractiveElementTarget,
     "dom"
 );
 
 await runEvaluation(
-    "results.D2Snap.inf-4-1",
-    async id => loadDOMRecord(id, dom => takeSnapshot(dom, Infinity, 4, 1.0), "results.D2Snap.inf-4-1"),
+    "D2Snap.5-8-75",
+    async id => loadDOMRecord(id, dom => takeSnapshot(dom, 5, 8, 0.75), "D2Snap.5-8-75"),
     analyzeDOMTargets,
     DOMInteractiveElementTarget,
     "dom"
-); */
+);
+
+await runEvaluation(
+    "D2Snap.inf-4-1",
+    async id => loadDOMRecord(id, dom => takeSnapshot(dom, Infinity, 4, 1.0), "D2Snap.inf-4-1"),
+    analyzeDOMTargets,
+    DOMInteractiveElementTarget,
+    "dom"
+);

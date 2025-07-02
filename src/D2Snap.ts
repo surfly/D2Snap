@@ -252,17 +252,19 @@ export async function takeSnapshot(
         }
     );
 
-    const virtualDomRoot = (k === Infinity && virtualDom.children.length)
-        ? virtualDom.children[0]
-        : virtualDom;
-
-    const snapshot = virtualDomRoot.innerHTML;
+    const snapshot = virtualDom.innerHTML;
     let serializedHtml = optionsWithDefaults.debug
         ? formatHtml(snapshot)
         : snapshot;
         serializedHtml = serializedHtml
         .replace(new RegExp(KEEP_LINE_BREAK_MARK, "g"), "\n")
         .replace(/\n *(\n|$)/g, "");
+        serializedHtml = (k === Infinity && virtualDom.children.length)
+        ? serializedHtml
+            .trim()
+            .replace(/^<[^>]+>\s*/, "")
+            .replace(/\s*<\/[^<]+>$/, "")
+        : serializedHtml;
 
     return {
         serializedHtml,
