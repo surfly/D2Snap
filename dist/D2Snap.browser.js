@@ -1,4 +1,49 @@
 (() => {
+  // src/util.ts
+  function findDownsamplingRoot(dom) {
+    return dom.body ?? dom.documentElement;
+  }
+  async function traverseDom(dom, root2, filter = NodeFilter.SHOW_ALL, cb) {
+    const walker = dom.createTreeWalker(root2, filter);
+    const nodes = [];
+    let node = walker.firstChild();
+    while (node) {
+      nodes.push(node);
+      node = walker.nextNode();
+    }
+    while (nodes.length) {
+      await cb(nodes.shift());
+    }
+  }
+  function formatHtml(html, indentSize = 2) {
+    const tokens = html.replace(/>\s+</g, "><").trim().split(/(<[^>]+>)/).filter((token) => token.trim().length);
+    const indentChar = " ".repeat(indentSize);
+    let indentLevel = 0;
+    const formattedHtml = [];
+    for (const token of tokens) {
+      if (token.match(/^<\/\w/)) {
+        indentLevel = Math.max(indentLevel - 1, 0);
+        formattedHtml.push(indentChar.repeat(indentLevel) + token);
+        continue;
+      }
+      if (token.match(/^<\w[^>]*[^\/]>$/)) {
+        formattedHtml.push(indentChar.repeat(indentLevel) + token);
+        indentLevel++;
+        continue;
+      }
+      if (token.match(/^<[^>]+\/>$/)) {
+        formattedHtml.push(indentChar.repeat(indentLevel) + token);
+        continue;
+      }
+      if (token.match(/^<[^!]/)) {
+        formattedHtml.push(indentChar.repeat(indentLevel) + token);
+        continue;
+      }
+      formattedHtml.push(indentChar.repeat(indentLevel) + token.trim());
+    }
+    return formattedHtml.join("\n").trim();
+  }
+
   // node_modules/turndown/lib/turndown.browser.es.js
   function extend(destination) {
     for (var i = 1; i < arguments.length; i++) {
@@ -844,49 +889,21 @@
     ]);
   }
 
-  // src/util.ts
-  function findDownsamplingRoot(dom) {
-    return dom.body ?? dom.documentElement;
-  }
-  async function traverseDom(dom, root2, filter = NodeFilter.SHOW_ALL, cb) {
-    const walker = dom.createTreeWalker(root2, filter);
-    const nodes = [];
-    let node = walker.firstChild();
-    while (node) {
-      nodes.push(node);
-      node = walker.nextNode();
-    }
-    while (nodes.length) {
-      await cb(nodes.shift());
-    }
-  }
-  function formatHtml(html, indentSize = 2) {
-    const tokens = html.replace(/>\s+</g, "><").trim().split(/(<[^>]+>)/).filter((token) => token.trim().length);
-    const indentChar = " ".repeat(indentSize);
-    let indentLevel = 0;
-    const formattedHtml = [];
-    for (const token of tokens) {
-      if (token.match(/^<\/\w/)) {
-        indentLevel = Math.max(indentLevel - 1, 0);
-        formattedHtml.push(indentChar.repeat(indentLevel) + token);
-        continue;
-      }
-      if (token.match(/^<\w[^>]*[^\/]>$/)) {
-        formattedHtml.push(indentChar.repeat(indentLevel) + token);
-        indentLevel++;
-        continue;
-      }
-      if (token.match(/^<[^>]+\/>$/)) {
-        formattedHtml.push(indentChar.repeat(indentLevel) + token);
-        continue;
-      }
-      if (token.match(/^<[^!]/)) {
-        formattedHtml.push(indentChar.repeat(indentLevel) + token);
-        continue;
-      }
-      formattedHtml.push(indentChar.repeat(indentLevel) + token.trim());
-    }
-    return formattedHtml.join("\n").trim();
+  // src/Turndown.ts
+  var KEEP_TAG_NAMES = ["a"];
+  var SERVICE = new turndown_browser_es_default({
+    headingStyle: "atx",
+    bulletListMarker: "-",
+    codeBlockStyle: "fenced"
+  });
+  SERVICE.addRule("keep", {
+    filter: KEEP_TAG_NAMES,
+    replacement: (_, node) => node.outerHTML
+  });
+  SERVICE.use(gfm);
+  var KEEP_LINE_BREAK_MARK = "@@@";
+  function turndown(markup) {
+    return SERVICE.turndown(markup).trim().replace(/\n|$/g, KEEP_LINE_BREAK_MARK);
   }
 
   // src/config.json
@@ -1056,18 +1073,6 @@
   };
 
   // src/D2Snap.ts
-  var TURNDOWN_KEEP_TAG_NAMES = ["a"];
-  var TURNDOWN_SERVICE = new turndown_browser_es_default({
-    headingStyle: "atx",
-    bulletListMarker: "-",
-    codeBlockStyle: "fenced"
-  });
-  TURNDOWN_SERVICE.addRule("keep", {
-    filter: TURNDOWN_KEEP_TAG_NAMES,
-    replacement: (_, node) => node.outerHTML
-  });
-  TURNDOWN_SERVICE.use(gfm);
-  var KEEP_LINE_BREAK_MARK = "@@@";
   function isElementType(type, elementNode) {
     return rating_default.typeElement[type].tagNames.includes(elementNode.tagName.toLowerCase());
   }
@@ -1091,10 +1096,8 @@
     function snapElementContentNode(elementNode) {
       if (elementNode.nodeType !== 1 /* ELEMENT_NODE */) return;
       if (!isElementType("content", elementNode)) return;
-      const markdown = TURNDOWN_SERVICE.turndown(elementNode.outerHTML);
-      const markdownNodesFragment = dom.createRange().createContextualFragment(
-        markdown.trim().replace(/\n|$/g, KEEP_LINE_BREAK_MARK)
-      );
+      const markdown = turndown(elementNode.outerHTML);
+      const markdownNodesFragment = dom.createRange().createContextualFragment(markdown);
       elementNode.replaceWith(...markdownNodesFragment.childNodes);
     }
     function snapElementInteractiveNode(elementNode) {

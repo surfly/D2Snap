@@ -1,7 +1,3 @@
-// src/D2Snap.ts
-import TurndownService from "turndown";
-import * as turndownPluginGfm from "turndown-plugin-gfm";
-
 // src/util.ts
 function findDownsamplingRoot(dom) {
   return dom.body ?? dom.documentElement;
@@ -45,6 +41,25 @@ function formatHtml(html, indentSize = 2) {
     formattedHtml.push(indentChar.repeat(indentLevel) + token.trim());
   }
   return formattedHtml.join("\n").trim();
+}
+
+// src/Turndown.ts
+import TurndownService from "turndown";
+import * as turndownPluginGfm from "turndown-plugin-gfm";
+var KEEP_TAG_NAMES = ["a"];
+var SERVICE = new TurndownService({
+  headingStyle: "atx",
+  bulletListMarker: "-",
+  codeBlockStyle: "fenced"
+});
+SERVICE.addRule("keep", {
+  filter: KEEP_TAG_NAMES,
+  replacement: (_, node) => node.outerHTML
+});
+SERVICE.use(turndownPluginGfm.gfm);
+var KEEP_LINE_BREAK_MARK = "@@@";
+function turndown(markup) {
+  return SERVICE.turndown(markup).trim().replace(/\n|$/g, KEEP_LINE_BREAK_MARK);
 }
 
 // src/config.json
@@ -214,18 +229,6 @@ var rating_default = {
 };
 
 // src/D2Snap.ts
-var TURNDOWN_KEEP_TAG_NAMES = ["a"];
-var TURNDOWN_SERVICE = new TurndownService({
-  headingStyle: "atx",
-  bulletListMarker: "-",
-  codeBlockStyle: "fenced"
-});
-TURNDOWN_SERVICE.addRule("keep", {
-  filter: TURNDOWN_KEEP_TAG_NAMES,
-  replacement: (_, node) => node.outerHTML
-});
-TURNDOWN_SERVICE.use(turndownPluginGfm.gfm);
-var KEEP_LINE_BREAK_MARK = "@@@";
 function isElementType(type, elementNode) {
   return rating_default.typeElement[type].tagNames.includes(elementNode.tagName.toLowerCase());
 }
@@ -249,10 +252,8 @@ async function takeSnapshot(dom, k = 2, l = 5, m = 0.5, options = {}) {
   function snapElementContentNode(elementNode) {
     if (elementNode.nodeType !== 1 /* ELEMENT_NODE */) return;
     if (!isElementType("content", elementNode)) return;
-    const markdown = TURNDOWN_SERVICE.turndown(elementNode.outerHTML);
-    const markdownNodesFragment = dom.createRange().createContextualFragment(
-      markdown.trim().replace(/\n|$/g, KEEP_LINE_BREAK_MARK)
-    );
+    const markdown = turndown(elementNode.outerHTML);
+    const markdownNodesFragment = dom.createRange().createContextualFragment(markdown);
     elementNode.replaceWith(...markdownNodesFragment.childNodes);
   }
   function snapElementInteractiveNode(elementNode) {

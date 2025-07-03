@@ -1,27 +1,11 @@
-// Copyright (c) Dom Christie
-import TurndownService from "turndown";
-import * as turndownPluginGfm from "turndown-plugin-gfm"
-// --------------------------
+
 
 import { TTextNode, TDepthElement, TDOM, TOptions, TSnapshot, NodeFilter, Node } from "./types.ts";
 import { formatHtml, findDownsamplingRoot, traverseDom } from "./util.ts";
+import { KEEP_LINE_BREAK_MARK, turndown } from "./Turndown.ts";
 
 import CONFIG from "./config.json" with { type: "json" };
 import RATING from "./rating.json" with { type: "json" };
-
-
-const TURNDOWN_KEEP_TAG_NAMES = [ "a" ];
-const TURNDOWN_SERVICE = new TurndownService({
-    headingStyle: "atx",
-    bulletListMarker: "-",
-    codeBlockStyle: "fenced",
-});
-TURNDOWN_SERVICE.addRule("keep", {
-    filter: TURNDOWN_KEEP_TAG_NAMES,
-    replacement: (_, node) => node.outerHTML
-});
-TURNDOWN_SERVICE.use(turndownPluginGfm.gfm)
-const KEEP_LINE_BREAK_MARK = "@@@";
 
 
 function isElementType(type, elementNode: HTMLElement) {
@@ -69,14 +53,10 @@ export async function takeSnapshot(
         if(!isElementType("content", elementNode)) return;
 
         // markdown
-        const markdown = TURNDOWN_SERVICE.turndown(elementNode.outerHTML);
+        const markdown = turndown(elementNode.outerHTML);
         const markdownNodesFragment = dom
             .createRange()
-            .createContextualFragment(
-                markdown
-                    .trim()
-                    .replace(/\n|$/g, KEEP_LINE_BREAK_MARK)
-            );
+            .createContextualFragment(markdown);
 
         elementNode
             .replaceWith(...markdownNodesFragment.childNodes);

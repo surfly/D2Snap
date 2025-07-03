@@ -8,7 +8,7 @@
     "build:browser": "npx esbuild ./src/D2Snap.browser.ts --bundle --outfile=./dist/D2Snap.browser.js",
     "build:browser:watch": "npm run build:browser -- --watch",
     "build": "npm run build:lib && npm run build:browser",
-    "test": "node ./test/test.js",
+    "test": "node --experimental-strip-types ./test/test.js",
     "eval-util": "node --no-warnings --env-file=.env",
     "eval:gui": "npm run eval-util -- ./eval/eval.gui.js",
     "eval:gui:single": "npm run eval:gui -- --split 1 --verbose",
