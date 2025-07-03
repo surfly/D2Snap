@@ -38,6 +38,7 @@ process.on("exit", code => {
 
 [
     "test.D2Snap",
+    "test.TextRank",
     "test.Turndown"
 ]
     .forEach(async reference => {
