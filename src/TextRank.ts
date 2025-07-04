@@ -2,9 +2,10 @@
 // Copyright (c) Rada Mihalcea and Paul Tarau
 // ------------------------------------------
 
-type TVector = number[];
-type TMatrix = number[][];
-type TTextRankOptions = {
+type Vector = number[];
+type Matrix = number[][];
+
+type TextRankOptions = {
     damping: number;
     maxIterations: number;
 }
@@ -18,20 +19,27 @@ function initMatrix(n: number, m: number = n): number[][] {
         .map(() => initArray(m));
 }
 
+function tokenizeSentences(text: string): string[] {
+    return text
+        .replace(/[^\w\s.?!:]+/g, "")
+        .split(/(?=[.?!:])\s|\n|\r/g)
+        .map((rawSentence: string) => rawSentence.trim())
+        .filter((sentence: string) => !!sentence);
+}
 
-export function textRank(text: string, k: number = 3, options: Partial<TTextRankOptions> = {}): string {
-    const optionsWithDefaults: TTextRankOptions = {
+
+export function textRank(textOrSentences: string|string[], k: number = 3, options: Partial<TextRankOptions> = {}): string {
+    const optionsWithDefaults: TextRankOptions = {
         damping: 0.75,
         maxIterations: 20,
 
         ...options
     };
 
-    const sentences: string[] = text
-        .replace(/[^\w\s.?!:]+/g, "")
-        .split(/[.?!:]\s|\n|\r/g)
-        .map((rawSentence: string) => rawSentence.trim())
-        .filter((sentence: string) => !!sentence);
+
+    const sentences: string[] = !Array.isArray(textOrSentences)
+        ? tokenizeSentences(textOrSentences)
+        : textOrSentences;
     const sentenceTokens: string[][] = sentences
         .map((sentence: string) => sentence
             .toLowerCase()
@@ -40,13 +48,13 @@ export function textRank(text: string, k: number = 3, options: Partial<TTextRank
             .filter(token => !!token.trim()));
     const n: number = sentences.length;
 
-    const similarityMatrix: TMatrix = initMatrix(n);
+    const similarityMatrix: Matrix = initMatrix(n);
     for (let i = 0; i < n; i++) {
         for (let j = 0; j < n; j++) {
             if (i === j) continue;
 
-            const vector1: TVector = [];
-            const vector2: TVector = [];
+            const vector1: Vector = [];
+            const vector2: Vector = [];
             for(const token of new Set(sentenceTokens[i].concat(sentenceTokens[j]))) {
                 vector1.push(sentenceTokens[i].filter(w => w === token).length);
                 vector2.push(sentenceTokens[j].filter(w => w === token).length);
@@ -64,7 +72,7 @@ export function textRank(text: string, k: number = 3, options: Partial<TTextRank
         }
     }
 
-    const scores: TVector = initArray(n, 1);
+    const scores: Vector = initArray(n, 1);
     for(let iteration = 0; iteration < optionsWithDefaults.maxIterations; iteration++) {
         for(let i = 0; i < n; i++) {
             let sum: number = 0;
@@ -91,8 +99,18 @@ export function textRank(text: string, k: number = 3, options: Partial<TTextRank
             };
         })
         .sort((a, b) => b.score - a.score)
-        .slice(0, k)
+        .slice(0, Math.min(k, sentences.length))
         .sort((a, b) => a.index - b.index)
-        .map(obj => `${obj.sentence}.`)
+        .map(obj => obj.sentence)
         .join(" ");
+}
+
+export function relativeTextRank(text: string, ratio: number = 0.5, options: Partial<TextRankOptions> = {}): string {
+    const sentences: string[] = tokenizeSentences(text);
+    const k: number = Math.max(
+        Math.round(sentences.length * ratio),
+        1
+    );
+
+    return textRank(sentences, k, options);
 }
