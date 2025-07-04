@@ -10,19 +10,19 @@ document
         console.log(document.body.innerHTML);
 
         presentSnapshot(
-            await D2Snap.takeSnapshot(2, 5, 0.375, {
+            await D2Snap.d2Snap(2, 5, 0.375, {
                 debug: true
             }),
             { k: 2, l: 5, m: 0.375 }
         );
         presentSnapshot(
-            await D2Snap.takeSnapshot(4, 2, 0.6, {
+            await D2Snap.d2Snap(4, 2, 0.6, {
                 debug: true
             }),
             { k: 4, l: 2, m: 0.6 }
         );
         presentSnapshot(
-            await D2Snap.takeAdaptiveSnapshot(undefined, undefined, {
+            await D2Snap.adaptiveD2Snap(undefined, undefined, {
                 debug: true,
                 assignUniqueIDs: true
             })

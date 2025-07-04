@@ -8,7 +8,7 @@ import { z } from "zod";
 import { runEvaluation } from "./eval.js";
 import { analyzeDOMTargets } from "./util.dom.js";
 
-import { takeSnapshot, takeAdaptiveSnapshot } from "../dist/D2Snap.lib.js";
+import { d2Snap, adaptiveD2Snap } from "../dist/D2Snap.lib.js";
 
 
 const DOMInteractiveElementTarget = z.object({
@@ -16,8 +16,8 @@ const DOMInteractiveElementTarget = z.object({
 });
 
 const SNAPSHOT_CB = {
-    "takeSnapshot": takeSnapshot,
-    "takeAdaptiveSnapshot": takeAdaptiveSnapshot
+    "d2Snap": d2Snap,
+    "adaptiveD2Snap": adaptiveD2Snap
 };
 const UNIQUE_ID_ATTR = "data-uid";
 const D2SNAP_RESULTS_DIR = join(import.meta.dirname, "D2Snap-results");
@@ -30,7 +30,7 @@ mkdirSync(D2SNAP_RESULTS_DIR, {
 });
 
 
-const loadDOMRecord = async (id, takeSnapshotCb, name) => {
+const loadDOMRecord = async (id, d2SnapCb, name) => {
     const originalDOM = readFileSync(join(import.meta.dirname, "dataset", "dom", `${id}.html`)).toString();
     const { document } = new JSDOM(originalDOM).window;
 
@@ -43,7 +43,7 @@ const loadDOMRecord = async (id, takeSnapshotCb, name) => {
         node = walker.nextNode();
     }
 
-    const downsampledDOMSnapshot = await takeSnapshotCb(document);
+    const downsampledDOMSnapshot = await d2SnapCb(document);
 
     writeFileSync(join(D2SNAP_RESULTS_DIR, `${id}.${name}`), downsampledDOMSnapshot.serializedHtml);
 

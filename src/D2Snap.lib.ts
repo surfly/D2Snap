@@ -1,10 +1,10 @@
-import { takeSnapshot as _takeSnapshot, takeAdaptiveSnapshot  as _takeAdaptiveSnapshot} from "./D2Snap";
-import { TDOM } from "./types";
+import { d2Snap as _d2Snap, adaptiveD2Snap  as _adaptiveD2Snap} from "./D2Snap";
+import { DOM } from "./types";
 
 import { JSDOM } from "jsdom";
 
 
-function dynamicizeDOM(domOrSerialisedDOM: TDOM|string): TDOM {
+function dynamicizeDOM(domOrSerialisedDOM: DOM|string): DOM {
     if(typeof(domOrSerialisedDOM) !== "string") return domOrSerialisedDOM;
 
     const dynamicDOM = new JSDOM(domOrSerialisedDOM);
@@ -12,16 +12,16 @@ function dynamicizeDOM(domOrSerialisedDOM: TDOM|string): TDOM {
     return dynamicDOM.window.document;
 }
 
-export function takeSnapshot(
-    domOrSerialisedDOM: TDOM|string,
-    ...args: Parameters<typeof _takeSnapshot> extends [ unknown, ...infer T ] ? T : never
+export function d2Snap(
+    domOrSerialisedDOM: DOM|string,
+    ...args: Parameters<typeof _d2Snap> extends [ unknown, ...infer T ] ? T : never
 ) {
-    return _takeSnapshot(dynamicizeDOM(domOrSerialisedDOM), ...args);
+    return _d2Snap(dynamicizeDOM(domOrSerialisedDOM), ...args);
 }
 
-export function takeAdaptiveSnapshot(
-    domOrSerialisedDOM: TDOM|string,
-    ...args: Parameters<typeof _takeAdaptiveSnapshot> extends [ unknown, ...infer T ] ? T : never
+export function adaptiveD2Snap(
+    domOrSerialisedDOM: DOM|string,
+    ...args: Parameters<typeof _adaptiveD2Snap> extends [ unknown, ...infer T ] ? T : never
 ) {
-    return _takeAdaptiveSnapshot(dynamicizeDOM(domOrSerialisedDOM), ...args);
+    return _adaptiveD2Snap(dynamicizeDOM(domOrSerialisedDOM), ...args);
 }

@@ -1,12 +1,18 @@
-
-
-import { TTextNode, TDepthElement, TDOM, TOptions, TSnapshot, NodeFilter, Node } from "./types.ts";
+import { TextNode, HTMLElementDepth, DOM, D2SnapOptions, Snapshot, NodeFilter, Node } from "./D2Snap.types.ts";
 import { formatHtml, findDownsamplingRoot, traverseDom } from "./util.ts";
+import { relativeTextRank } from "./TextRank.ts";
 import { KEEP_LINE_BREAK_MARK, turndown } from "./Turndown.ts";
 
 import CONFIG from "./config.json" with { type: "json" };
 import RATING from "./rating.json" with { type: "json" };
 
+
+function checkParam(param: number, allowInfinity: boolean = false) {
+    if(allowInfinity && param === Infinity) return;
+
+    if(param < 0 || param > 1)
+            throw new RangeError(`Invalid parameter ${param}, expects value in [0, 1]`);
+}
 
 function isElementType(type, elementNode: HTMLElement) {
     return RATING.typeElement[type]
@@ -15,11 +21,15 @@ function isElementType(type, elementNode: HTMLElement) {
 }
 
 
-export async function takeSnapshot(
-    dom: TDOM,
-    k: number = 2, l: number = 5, m: number = 0.5,
-    options: TOptions = {}
-): Promise<TSnapshot> {
+export async function d2Snap(
+    dom: DOM,
+    k: number = 0.4, l: number = 0.5, m: number = 0.6,
+    options: D2SnapOptions = {}
+): Promise<Snapshot> {
+    checkParam(k, true);
+    checkParam(l);
+    checkParam(m);
+
     const optionsWithDefaults = {
         debug: false,
         assignUniqueIDs: false,
@@ -27,62 +37,40 @@ export async function takeSnapshot(
         ...options
     }
 
-    function snapTextNode(textNode: TTextNode, l: number) {
-        if(textNode.nodeType !== Node.TEXT_NODE) return;
+    function snapElementNode(elementNode: HTMLElement) {
+        if(isElementType("container", elementNode)) return;
 
-        // TODO: Use element innerText instead to respect only rendered text?
-        textNode.textContent = textNode
-            .textContent
-            .trim()
-            .split(/\s+/)
-            .filter((_, i) => (i + 1) % l)
-            .join(" ");
-    }
-
-    function snapAttributeNode(elementNode: HTMLElement, m: number) {
-        if(elementNode.nodeType !== Node.ELEMENT_NODE) return;
-
-        for(const attr of Array.from(elementNode.attributes)) {
-            if(RATING.typeAttribute.semantics[attr.name] >= m) continue;
-
-            elementNode.removeAttribute(attr.name);
+        if(isElementType("content", elementNode)) {
+            return snapElementContentNode(elementNode);
         }
-    }
-    function snapElementContentNode(elementNode: HTMLElement) {
-        if(elementNode.nodeType !== Node.ELEMENT_NODE) return;
-        if(!isElementType("content", elementNode)) return;
+        if(isElementType("interactive", elementNode)) {
+            snapElementInteractiveNode(elementNode);
 
-        // markdown
-        const markdown = turndown(elementNode.outerHTML);
-        const markdownNodesFragment = dom
-            .createRange()
-            .createContextualFragment(markdown);
+            return;
+        }
 
         elementNode
-            .replaceWith(...markdownNodesFragment.childNodes);
+            .parentNode
+            ?.removeChild(elementNode);
     }
 
-
-    function snapElementInteractiveNode(elementNode: HTMLElement) {
-        if(elementNode.nodeType !== Node.ELEMENT_NODE) return;
-        if(!isElementType("interactive", elementNode)) return;
-
-        // pass
-    }
-
-    function snapElementContainerNode(elementNode: TDepthElement, k: number) {
+    function snapElementContainerNode(elementNode: HTMLElementDepth, k: number, domTreeHeight: number) {
         if(elementNode.nodeType !== Node.ELEMENT_NODE) return;
         if(!isElementType("container", elementNode)) return;
 
         // merge
-        if(elementNode.depth % k === 0) return;
+        const mergeLevels: number = Math.max(
+            Math.round(domTreeHeight * (Math.min(1, k))),
+            1
+        );
+        if((elementNode.depth - 1) % mergeLevels === 0) return;
 
         const getContainerSemantics = tagName => RATING.typeElement
             .container
             .semantics[tagName.toLowerCase()];
 
         const elements = [
-            elementNode.parentElement as TDepthElement,
+            elementNode.parentElement as HTMLElementDepth,
             elementNode
         ];
 
@@ -142,25 +130,43 @@ export async function takeSnapshot(
             ?.removeChild(sourceEl);
     }
 
-    function snapElementNode(elementNode: HTMLElement) {
-        if(isElementType("container", elementNode)) {
-            (elementNode as TDepthElement).depth = ((elementNode.parentNode as TDepthElement).depth ?? -1) + 1;
+    function snapElementContentNode(elementNode: HTMLElement) {
+        if(elementNode.nodeType !== Node.ELEMENT_NODE) return;
+        if(!isElementType("content", elementNode)) return;
 
-            return;
-        }
-
-        if(isElementType("content", elementNode)) {
-            return snapElementContentNode(elementNode);
-        }
-        if(isElementType("interactive", elementNode)) {
-            snapElementInteractiveNode(elementNode);
-
-            return;
-        }
+        // markdown
+        const markdown = turndown(elementNode.outerHTML);
+        const markdownNodesFragment = dom
+            .createRange()
+            .createContextualFragment(markdown);
 
         elementNode
-            .parentNode
-            ?.removeChild(elementNode);
+            .replaceWith(...markdownNodesFragment.childNodes);
+    }
+
+    function snapElementInteractiveNode(elementNode: HTMLElement) {
+        if(elementNode.nodeType !== Node.ELEMENT_NODE) return;
+        if(!isElementType("interactive", elementNode)) return;
+
+        // pass
+    }
+
+    function snapTextNode(textNode: TextNode, l: number) {
+        if(textNode.nodeType !== Node.TEXT_NODE) return;
+
+        const text: string = (textNode?.innerText ?? textNode.textContent);
+
+        textNode.textContent = relativeTextRank(text, (1 - l));
+    }
+
+    function snapAttributeNode(elementNode: HTMLElement, m: number) {
+        if(elementNode.nodeType !== Node.ELEMENT_NODE) return;
+
+        for(const attr of Array.from(elementNode.attributes)) {
+            if(RATING.typeAttribute.semantics[attr.name] >= m) continue;
+
+            elementNode.removeAttribute(attr.name);
+        }
     }
 
     const originalSize = dom.documentElement.outerHTML.length;
@@ -172,19 +178,34 @@ export async function takeSnapshot(
             dom,
             partialDom,
             NodeFilter.SHOW_ELEMENT,
-            node => {
+            elementNode => {
                 if(
                     ![
                         ...RATING.typeElement.container.tagNames,
                         ...RATING.typeElement.interactive.tagNames
-                    ].includes(node.tagName.toLowerCase())
+                    ]
+                        .includes(elementNode.tagName.toLowerCase())
                 ) return;
 
-                node.setAttribute(CONFIG.uniqueIDAttribute, (n++).toString());
+                elementNode.setAttribute(CONFIG.uniqueIDAttribute, (n++).toString());
             }
         );
 
     const virtualDom = partialDom.cloneNode(true) as HTMLElement;
+
+    let domTreeHeight: number = 0;
+    await traverseDom<Element>(
+        dom,
+        virtualDom,
+        NodeFilter.SHOW_ELEMENT,
+        elementNode => {
+            const depth: number = ((elementNode.parentNode as HTMLElementDepth).depth ?? 0) + 1;
+
+            (elementNode as HTMLElementDepth).depth = depth;
+
+            domTreeHeight = Math.max(depth, domTreeHeight);
+        }
+    );
 
     // Prepare
     await traverseDom<Comment>(
@@ -196,20 +217,12 @@ export async function takeSnapshot(
 
     // D2Snap implementation harnessing the power of the TreeWalkers API:
 
-    // Attribute nodes
-    await traverseDom<HTMLElement>(
-        dom,
-        virtualDom,
-        NodeFilter.SHOW_ELEMENT,
-        (node: HTMLElement) => snapAttributeNode(node, m)   // work on parent element
-    );
-
     // Text nodes first
-    await traverseDom<TTextNode>(
+    await traverseDom<TextNode>(
         dom,
         virtualDom,
         NodeFilter.SHOW_TEXT,
-        (node: TTextNode) => snapTextNode(node, l)
+        (node: TextNode) => snapTextNode(node, l)
     );
 
     // Non-container element nodes
@@ -221,15 +234,23 @@ export async function takeSnapshot(
     );
 
     // Container element nodes
-    await traverseDom<TDepthElement>(
+    await traverseDom<HTMLElementDepth>(
         dom,
         virtualDom,
         NodeFilter.SHOW_ELEMENT,
-        (node: TDepthElement) => {
+        (node: HTMLElementDepth) => {
             if(!isElementType("container", node)) return;
 
-            return snapElementContainerNode(node, k);
+            return snapElementContainerNode(node, k, domTreeHeight);
         }
+    );
+
+    // Attribute nodes
+    await traverseDom<HTMLElement>(
+        dom,
+        virtualDom,
+        NodeFilter.SHOW_ELEMENT,
+        (node: HTMLElement) => snapAttributeNode(node, m)   // work on parent element
     );
 
     const snapshot = virtualDom.innerHTML;
@@ -257,12 +278,12 @@ export async function takeSnapshot(
     };
 }
 
-export async function takeAdaptiveSnapshot(
-    dom: TDOM,
+export async function adaptiveD2Snap(
+    dom: DOM,
     maxTokens: number = 4096,
     maxIterations: number = 5,
-    options: TOptions = {}
-): Promise<TSnapshot & {
+    options: D2SnapOptions = {}
+): Promise<Snapshot & {
     parameters: {
         k: number; l: number; m: number;
         adaptiveIterations: number;
@@ -281,8 +302,11 @@ export async function takeAdaptiveSnapshot(
 
     const computeParameters = S => {
         return {
-            k: Math.round(Math.E**((2 / M) * S)),
+            /* k: Math.round(Math.E**((2 / M) * S)),
             l: Math.round(98 * Math.E**(-(4 / M) * S) + 2),
+            m: Math.E**(-(4 / M) * S) */
+            k: Math.E**(-(4 / M) * S),
+            l: Math.E**(-(4 / M) * S),
             m: Math.E**(-(4 / M) * S)
         };
     };
@@ -294,7 +318,7 @@ export async function takeAdaptiveSnapshot(
 
         // stretch by i^(1/4)
         parameters = computeParameters(S * i**0.75);
-        snapshot = await takeSnapshot(dom, parameters.k, parameters.l, parameters.m, options);
+        snapshot = await d2Snap(dom, parameters.k, parameters.l, parameters.m, options);
 
         i++;
     } while(snapshot.estimatedTokens > maxTokens && i < maxIterations);

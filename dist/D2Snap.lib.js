@@ -43,6 +43,78 @@ function formatHtml(html, indentSize = 2) {
   return formattedHtml.join("\n").trim();
 }
 
+// src/TextRank.ts
+function initArray(n, value = 0) {
+  return Array.from({ length: n }, () => value);
+}
+function initMatrix(n, m = n) {
+  return initArray(n).map(() => initArray(m));
+}
+function tokenizeSentences(text) {
+  return text.replace(/[^\w\s.?!:]+/g, "").split(/(?=[.?!:])\s|\n|\r/g).map((rawSentence) => rawSentence.trim()).filter((sentence) => !!sentence);
+}
+function textRank(textOrSentences, k = 3, options = {}) {
+  const optionsWithDefaults = {
+    damping: 0.75,
+    maxIterations: 20,
+    ...options
+  };
+  const sentences = !Array.isArray(textOrSentences) ? tokenizeSentences(textOrSentences) : textOrSentences;
+  const sentenceTokens = sentences.map((sentence) => sentence.toLowerCase().replace(/[^a-z0-9\s]/g, "").split(/\s+/).filter((token) => !!token.trim()));
+  const n = sentences.length;
+  const similarityMatrix = initMatrix(n);
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      if (i === j) continue;
+      const vector1 = [];
+      const vector2 = [];
+      for (const token of new Set(sentenceTokens[i].concat(sentenceTokens[j]))) {
+        vector1.push(sentenceTokens[i].filter((w) => w === token).length);
+        vector2.push(sentenceTokens[j].filter((w) => w === token).length);
+      }
+      let dotProduct = 0;
+      let normA = 0;
+      let normB = 0;
+      for (let i2 = 0; i2 < vector1.length; i2++) {
+        dotProduct += vector1[i2] * vector2[i2];
+        normA += vector1[i2] * vector1[i2];
+        normB += vector2[i2] * vector2[i2];
+      }
+      similarityMatrix[i][j] = dotProduct / (normA ** 0.5 * normB ** 0.5 + 1e-10);
+    }
+  }
+  const scores = initArray(n, 1);
+  for (let iteration = 0; iteration < optionsWithDefaults.maxIterations; iteration++) {
+    for (let i = 0; i < n; i++) {
+      let sum = 0;
+      for (let j = 0; j < n; j++) {
+        if (i === j) continue;
+        let norm = 0;
+        for (let i2 = 0; i2 < similarityMatrix[j].length; i2++) {
+          norm += similarityMatrix[j][i2] * similarityMatrix[i2][i2];
+        }
+        sum += similarityMatrix[j][i] / (norm || 1) * scores[j];
+      }
+      scores[i] = optionsWithDefaults.damping * sum + (1 - optionsWithDefaults.damping);
+    }
+  }
+  return sentences.map((sentence, i) => {
+    return {
+      sentence,
+      index: i,
+      score: scores[i]
+    };
+  }).sort((a, b) => b.score - a.score).slice(0, Math.min(k, sentences.length)).sort((a, b) => a.index - b.index).map((obj) => obj.sentence).join(" ");
+}
+function relativeTextRank(text, ratio = 0.5, options = {}) {
+  const sentences = tokenizeSentences(text);
+  const k = Math.max(
+    Math.round(sentences.length * ratio),
+    1
+  );
+  return textRank(sentences, k, options);
+}
+
 // src/Turndown.ts
 import TurndownService from "turndown";
 import * as turndownPluginGfm from "turndown-plugin-gfm";
@@ -229,41 +301,42 @@ var rating_default = {
 };
 
 // src/D2Snap.ts
+function checkParam(param, allowInfinity = false) {
+  if (allowInfinity && param === Infinity) return;
+  if (param < 0 || param > 1)
+    throw new RangeError(`Invalid parameter ${param}, expects value in [0, 1]`);
+}
 function isElementType(type, elementNode) {
   return rating_default.typeElement[type].tagNames.includes(elementNode.tagName.toLowerCase());
 }
-async function takeSnapshot(dom, k = 2, l = 5, m = 0.5, options = {}) {
+async function d2Snap(dom, k = 0.4, l = 0.5, m = 0.6, options = {}) {
+  checkParam(k, true);
+  checkParam(l);
+  checkParam(m);
   const optionsWithDefaults = {
     debug: false,
     assignUniqueIDs: false,
     ...options
   };
-  function snapTextNode(textNode, l2) {
-    if (textNode.nodeType !== 3 /* TEXT_NODE */) return;
-    textNode.textContent = textNode.textContent.trim().split(/\s+/).filter((_, i) => (i + 1) % l2).join(" ");
-  }
-  function snapAttributeNode(elementNode, m2) {
-    if (elementNode.nodeType !== 1 /* ELEMENT_NODE */) return;
-    for (const attr of Array.from(elementNode.attributes)) {
-      if (rating_default.typeAttribute.semantics[attr.name] >= m2) continue;
-      elementNode.removeAttribute(attr.name);
+  function snapElementNode(elementNode) {
+    if (isElementType("container", elementNode)) return;
+    if (isElementType("content", elementNode)) {
+      return snapElementContentNode(elementNode);
     }
+    if (isElementType("interactive", elementNode)) {
+      snapElementInteractiveNode(elementNode);
+      return;
+    }
+    elementNode.parentNode?.removeChild(elementNode);
   }
-  function snapElementContentNode(elementNode) {
-    if (elementNode.nodeType !== 1 /* ELEMENT_NODE */) return;
-    if (!isElementType("content", elementNode)) return;
-    const markdown = turndown(elementNode.outerHTML);
-    const markdownNodesFragment = dom.createRange().createContextualFragment(markdown);
-    elementNode.replaceWith(...markdownNodesFragment.childNodes);
-  }
-  function snapElementInteractiveNode(elementNode) {
-    if (elementNode.nodeType !== 1 /* ELEMENT_NODE */) return;
-    if (!isElementType("interactive", elementNode)) return;
-  }
-  function snapElementContainerNode(elementNode, k2) {
+  function snapElementContainerNode(elementNode, k2, domTreeHeight2) {
     if (elementNode.nodeType !== 1 /* ELEMENT_NODE */) return;
     if (!isElementType("container", elementNode)) return;
-    if (elementNode.depth % k2 === 0) return;
+    const mergeLevels = Math.max(
+      Math.round(domTreeHeight2 * Math.min(1, k2)),
+      1
+    );
+    if ((elementNode.depth - 1) % mergeLevels === 0) return;
     const getContainerSemantics = (tagName) => rating_default.typeElement.container.semantics[tagName.toLowerCase()];
     const elements = [
       elementNode.parentElement,
@@ -303,19 +376,28 @@ async function takeSnapshot(dom, k = 2, l = 5, m = 0.5, options = {}) {
     }
     sourceEl.parentNode?.removeChild(sourceEl);
   }
-  function snapElementNode(elementNode) {
-    if (isElementType("container", elementNode)) {
-      elementNode.depth = (elementNode.parentNode.depth ?? -1) + 1;
-      return;
+  function snapElementContentNode(elementNode) {
+    if (elementNode.nodeType !== 1 /* ELEMENT_NODE */) return;
+    if (!isElementType("content", elementNode)) return;
+    const markdown = turndown(elementNode.outerHTML);
+    const markdownNodesFragment = dom.createRange().createContextualFragment(markdown);
+    elementNode.replaceWith(...markdownNodesFragment.childNodes);
+  }
+  function snapElementInteractiveNode(elementNode) {
+    if (elementNode.nodeType !== 1 /* ELEMENT_NODE */) return;
+    if (!isElementType("interactive", elementNode)) return;
+  }
+  function snapTextNode(textNode, l2) {
+    if (textNode.nodeType !== 3 /* TEXT_NODE */) return;
+    const text = textNode?.innerText ?? textNode.textContent;
+    textNode.textContent = relativeTextRank(text, 1 - l2);
+  }
+  function snapAttributeNode(elementNode, m2) {
+    if (elementNode.nodeType !== 1 /* ELEMENT_NODE */) return;
+    for (const attr of Array.from(elementNode.attributes)) {
+      if (rating_default.typeAttribute.semantics[attr.name] >= m2) continue;
+      elementNode.removeAttribute(attr.name);
     }
-    if (isElementType("content", elementNode)) {
-      return snapElementContentNode(elementNode);
-    }
-    if (isElementType("interactive", elementNode)) {
-      snapElementInteractiveNode(elementNode);
-      return;
-    }
-    elementNode.parentNode?.removeChild(elementNode);
   }
   const originalSize = dom.documentElement.outerHTML.length;
   const partialDom = findDownsamplingRoot(dom);
@@ -324,27 +406,31 @@ async function takeSnapshot(dom, k = 2, l = 5, m = 0.5, options = {}) {
     dom,
     partialDom,
     1 /* SHOW_ELEMENT */,
-    (node) => {
+    (elementNode) => {
       if (![
         ...rating_default.typeElement.container.tagNames,
         ...rating_default.typeElement.interactive.tagNames
-      ].includes(node.tagName.toLowerCase())) return;
-      node.setAttribute(config_default.uniqueIDAttribute, (n++).toString());
+      ].includes(elementNode.tagName.toLowerCase())) return;
+      elementNode.setAttribute(config_default.uniqueIDAttribute, (n++).toString());
     }
   );
   const virtualDom = partialDom.cloneNode(true);
+  let domTreeHeight = 0;
+  await traverseDom(
+    dom,
+    virtualDom,
+    1 /* SHOW_ELEMENT */,
+    (elementNode) => {
+      const depth = (elementNode.parentNode.depth ?? 0) + 1;
+      elementNode.depth = depth;
+      domTreeHeight = Math.max(depth, domTreeHeight);
+    }
+  );
   await traverseDom(
     dom,
     virtualDom,
     128 /* SHOW_COMMENT */,
     (node) => node.parentNode?.removeChild(node)
-  );
-  await traverseDom(
-    dom,
-    virtualDom,
-    1 /* SHOW_ELEMENT */,
-    (node) => snapAttributeNode(node, m)
-    // work on parent element
   );
   await traverseDom(
     dom,
@@ -364,8 +450,15 @@ async function takeSnapshot(dom, k = 2, l = 5, m = 0.5, options = {}) {
     1 /* SHOW_ELEMENT */,
     (node) => {
       if (!isElementType("container", node)) return;
-      return snapElementContainerNode(node, k);
+      return snapElementContainerNode(node, k, domTreeHeight);
     }
+  );
+  await traverseDom(
+    dom,
+    virtualDom,
+    1 /* SHOW_ELEMENT */,
+    (node) => snapAttributeNode(node, m)
+    // work on parent element
   );
   const snapshot = virtualDom.innerHTML;
   let serializedHtml = optionsWithDefaults.debug ? formatHtml(snapshot) : snapshot;
@@ -382,13 +475,16 @@ async function takeSnapshot(dom, k = 2, l = 5, m = 0.5, options = {}) {
     }
   };
 }
-async function takeAdaptiveSnapshot(dom, maxTokens = 4096, maxIterations = 5, options = {}) {
+async function adaptiveD2Snap(dom, maxTokens = 4096, maxIterations = 5, options = {}) {
   const S = findDownsamplingRoot(dom).outerHTML.length;
   const M = 1e6;
   const computeParameters = (S2) => {
     return {
-      k: Math.round(Math.E ** (2 / M * S2)),
-      l: Math.round(98 * Math.E ** (-(4 / M) * S2) + 2),
+      /* k: Math.round(Math.E**((2 / M) * S)),
+      l: Math.round(98 * Math.E**(-(4 / M) * S) + 2),
+      m: Math.E**(-(4 / M) * S) */
+      k: Math.E ** (-(4 / M) * S2),
+      l: Math.E ** (-(4 / M) * S2),
       m: Math.E ** (-(4 / M) * S2)
     };
   };
@@ -397,7 +493,7 @@ async function takeAdaptiveSnapshot(dom, maxTokens = 4096, maxIterations = 5, op
   do {
     i++;
     parameters = computeParameters(S * i ** 0.75);
-    snapshot = await takeSnapshot(dom, parameters.k, parameters.l, parameters.m, options);
+    snapshot = await d2Snap(dom, parameters.k, parameters.l, parameters.m, options);
     i++;
   } while (snapshot.estimatedTokens > maxTokens && i < maxIterations);
   if (i === maxIterations)
@@ -418,13 +514,13 @@ function dynamicizeDOM(domOrSerialisedDOM) {
   const dynamicDOM = new JSDOM(domOrSerialisedDOM);
   return dynamicDOM.window.document;
 }
-function takeSnapshot2(domOrSerialisedDOM, ...args) {
-  return takeSnapshot(dynamicizeDOM(domOrSerialisedDOM), ...args);
+function d2Snap2(domOrSerialisedDOM, ...args) {
+  return d2Snap(dynamicizeDOM(domOrSerialisedDOM), ...args);
 }
-function takeAdaptiveSnapshot2(domOrSerialisedDOM, ...args) {
-  return takeAdaptiveSnapshot(dynamicizeDOM(domOrSerialisedDOM), ...args);
+function adaptiveD2Snap2(domOrSerialisedDOM, ...args) {
+  return adaptiveD2Snap(dynamicizeDOM(domOrSerialisedDOM), ...args);
 }
 export {
-  takeAdaptiveSnapshot2 as takeAdaptiveSnapshot,
-  takeSnapshot2 as takeSnapshot
+  adaptiveD2Snap2 as adaptiveD2Snap,
+  d2Snap2 as d2Snap
 };

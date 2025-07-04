@@ -6,9 +6,7 @@ const EVALS = [
     "results.gui",
     "results.dom",
     "results.D2Snap.adaptive",
-    "results.D2Snap.2-16-375",
-    "results.D2Snap.5-8-75",
-    "results.D2Snap.inf-4-1"
+    "results.D2Snap.3-3-3",
 ];
 
 

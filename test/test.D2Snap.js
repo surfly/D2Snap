@@ -1,7 +1,7 @@
 import { join } from "path";
 import { readFileSync, writeFileSync } from "fs";
 
-import { takeSnapshot, takeAdaptiveSnapshot } from "../dist/D2Snap.lib.js";
+import { d2Snap, adaptiveD2Snap } from "../dist/D2Snap.lib.js";
 
 
 function path(fileName) {
@@ -21,12 +21,16 @@ function writeActual(domName, html) {
 }
 
 function flattenDOMSnapshot(snapshot) {
-    return snapshot.trim().replace(/\s+/g, "");
+    return snapshot
+        .trim()
+        .replace(/\s*(\n|\r)+\s*/g, "")
+        .replace(/\s{2,}/g, " ")
+        .replace(/\s+(?=<)|(?=>)\s+/g, "");
 }
 
 
 await test("Take adaptive DOM snapshot (4096)", async () => {
-    const snapshot = await takeAdaptiveSnapshot(readFile("agents"), 4096, 5, {
+    const snapshot = await adaptiveD2Snap(readFile("agents"), 4096, 5, {
         debug: true,
         assignUniqueIDs: true
     });
@@ -53,7 +57,7 @@ await test("Take adaptive DOM snapshot (4096)", async () => {
 });
 
 await test("Take adaptive DOM snapshot (2048)", async() => {
-    const snapshot = await takeAdaptiveSnapshot(readFile("agents"), 2048, 5, {
+    const snapshot = await adaptiveD2Snap(readFile("agents"), 2048, 5, {
         debug: true,
         assignUniqueIDs: true
     });
@@ -68,7 +72,7 @@ await test("Take adaptive DOM snapshot (2048)", async() => {
 });
 
 await test("Take DOM snapshot (L)", async () => {
-    const snapshot = await takeSnapshot(readFile("pizza"), 2, 6, 0.375, {
+    const snapshot = await d2Snap(readFile("pizza"), 0.3, 0.3, 0.3, {
         debug: true
     });
 
@@ -77,14 +81,14 @@ await test("Take DOM snapshot (L)", async () => {
 
     assertAlmostEqual(
         snapshot.meta.originalSize,
-        640,
+        710,
         -1,
         "Invalid DOM snapshot original size"
     );
 
     assertAlmostEqual(
         snapshot.meta.sizeRatio,
-        0.43,
+        0.48,
         2,
         "Invalid DOM snapshot size ratio"
     );
@@ -97,7 +101,7 @@ await test("Take DOM snapshot (L)", async () => {
 });
 
 await test("Take DOM snapshot (M)", async() => {
-    const snapshot = await takeSnapshot(readFile("pizza"), 4, 4, 0.7, {
+    const snapshot = await d2Snap(readFile("pizza"), 0.4, 0.6, 0.8, {
         debug: true
     });
 
@@ -119,7 +123,7 @@ await test("Take DOM snapshot (M)", async() => {
 });
 
 await test("Take DOM snapshot (S)", async () => {
-    const snapshot = await takeSnapshot(readFile("pizza"), 100, 2, 1.0, {
+    const snapshot = await d2Snap(readFile("pizza"), 1.0, 1.0, 1.0, {
         debug: true
     });
 
@@ -128,7 +132,29 @@ await test("Take DOM snapshot (S)", async () => {
 
     assertAlmostEqual(
         snapshot.meta.sizeRatio,
-        0.26,
+        0.31,
+        2,
+        "Invalid DOM snapshot size ratio"
+    );
+
+    assertEqual(
+        flattenDOMSnapshot(snapshot.serializedHtml),
+        flattenDOMSnapshot(expected),
+        "Invalid DOM snapshot"
+    );
+});
+
+await test("Take DOM snapshot (linearized)", async () => {
+    const snapshot = await d2Snap(readFile("pizza"), Infinity, 1.0, 1.0, {
+        debug: true
+    });
+
+    writeActual("pizza.lin", snapshot.serializedHtml);
+    const expected = readExpected("pizza.lin");
+
+    assertAlmostEqual(
+        snapshot.meta.sizeRatio,
+        0.31,
         2,
         "Invalid DOM snapshot size ratio"
     );

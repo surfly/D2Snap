@@ -12,21 +12,24 @@ export enum Node {
     TEXT_NODE = 3
 }
 
-export type TDepth = { depth: number; };
-export type TTextNode = Node & {
+export type TextNode = Node & {
     nodeType: number;
     textContent: string;
+
+    innerText?: string;
 };
-export type TDepthElement = HTMLElement & TDepth;
+export type HTMLElementDepth = HTMLElement & {
+    depth: number;
+};
 
-export type TDOM = Document;
-
-export type TOptions = {
+export type D2SnapOptions = {
     debug?: boolean;
     assignUniqueIDs?: boolean;
 };
 
-export type TSnapshot = {
+export type DOM = Document;
+
+export type Snapshot = {
     serializedHtml: string;
     meta: {
         originalSize: number;

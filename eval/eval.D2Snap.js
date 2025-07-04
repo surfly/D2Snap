@@ -25,8 +25,7 @@ function runEvaluationInWorker(identifier, snapshotType, ...args) {
 
 
 await Promise.all([
-    runEvaluationInWorker("D2Snap.adaptive", "takeAdaptiveSnapshot", 4096, 5),
-    runEvaluationInWorker("D2Snap.2-6-375", "takeSnapshot", 2, 6, 0.375),
-    runEvaluationInWorker("D2Snap.5-8-75", "takeSnapshot", 5, 8, 0.75),
-    runEvaluationInWorker("D2Snap.inf-4-1", "takeSnapshot", Infinity, 4, 1.0)
+    runEvaluationInWorker("D2Snap.adaptive", "adaptiveD2Snap", 4096, 5),
+    runEvaluationInWorker("D2Snap.3-3-3", "d2Snap", 0.3, 0.3, 0.3),
+    runEvaluationInWorker("D2Snap.inf-4-1", "d2Snap", Infinity, 1.0, 1.0)
 ]);
