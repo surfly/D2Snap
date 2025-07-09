@@ -52,7 +52,7 @@
     return initArray(n).map(() => initArray(m));
   }
   function tokenizeSentences(text) {
-    return text.replace(/[^\w\s.?!:]+/g, "").split(/(?=[.?!:])\s|\n|\r/g).map((rawSentence) => rawSentence.trim()).filter((sentence) => !!sentence);
+    return text.replace(/[^\w\s.?!:]+/g, "").split(/[.?!:]\s|\n|\r/g).map((rawSentence) => rawSentence.trim()).filter((sentence) => !!sentence);
   }
   function textRank(textOrSentences, k = 3, options = {}) {
     const optionsWithDefaults = {
@@ -1322,26 +1322,47 @@
   async function adaptiveD2Snap(dom, maxTokens = 4096, maxIterations = 5, options = {}) {
     const S = findDownsamplingRoot(dom).outerHTML.length;
     const M = 1e6;
-    const computeParameters = (S2) => {
-      return {
-        /* k: Math.round(Math.E**((2 / M) * S)),
-        l: Math.round(98 * Math.E**(-(4 / M) * S) + 2),
-        m: Math.E**(-(4 / M) * S) */
-        k: Math.E ** (-(4 / M) * S2),
-        l: Math.E ** (-(4 / M) * S2),
-        m: Math.E ** (-(4 / M) * S2)
+    function* generateHalton() {
+      const halton = (index, base) => {
+        let result = 0;
+        let f = 1 / base;
+        let i3 = index;
+        while (i3 > 0) {
+          result += f * (i3 % base);
+          i3 = Math.floor(i3 / base);
+          f /= base;
+        }
+        return result;
       };
-    };
+      let i2 = 0;
+      while (true) {
+        i2++;
+        yield [
+          halton(i2, 2),
+          halton(i2, 3),
+          halton(i2, 5)
+        ];
+      }
+    }
     let i = 0;
+    let sCalc = S;
     let parameters, snapshot;
-    do {
-      i++;
-      parameters = computeParameters(S * i ** 0.75);
+    const haltonGenerator = generateHalton();
+    while (true) {
+      const haltonPoint = haltonGenerator.next().value;
+      const computeParam = (haltonValue) => Math.min(sCalc / M * haltonValue, 1);
+      parameters = {
+        k: computeParam(haltonPoint[0]),
+        l: computeParam(haltonPoint[1]),
+        m: computeParam(haltonPoint[2])
+      };
       snapshot = await d2Snap(dom, parameters.k, parameters.l, parameters.m, options);
-      i++;
-    } while (snapshot.estimatedTokens > maxTokens && i < maxIterations);
-    if (i === maxIterations)
-      throw new RangeError("Unable to create snapshot below given token threshold");
+      sCalc = sCalc ** 1.125;
+      if (snapshot.meta.estimatedTokens <= maxTokens)
+        break;
+      if (i++ === maxIterations)
+        throw new RangeError("Unable to create snapshot below given token threshold");
+    }
     return {
       ...snapshot,
       parameters: {

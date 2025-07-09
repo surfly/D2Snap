@@ -50,7 +50,7 @@ await test("Take adaptive DOM snapshot (4096)", async () => {
     );
 
     assertIn(
-        flattenDOMSnapshot(`<a data-uid="7">About</a>`),
+        flattenDOMSnapshot(`<a href="/about" data-uid="7">About</a>`),
         flattenDOMSnapshot(snapshot.serializedHtml),
         "Interactive element not preserved"
     );
@@ -88,7 +88,7 @@ await test("Take DOM snapshot (L)", async () => {
 
     assertAlmostEqual(
         snapshot.meta.sizeRatio,
-        0.48,
+        0.43,
         2,
         "Invalid DOM snapshot size ratio"
     );
@@ -110,7 +110,7 @@ await test("Take DOM snapshot (M)", async() => {
 
     assertAlmostEqual(
         snapshot.meta.sizeRatio,
-        0.33,
+        0.21,
         2,
         "Invalid DOM snapshot size ratio"
     );
@@ -132,7 +132,7 @@ await test("Take DOM snapshot (S)", async () => {
 
     assertAlmostEqual(
         snapshot.meta.sizeRatio,
-        0.31,
+        0.2,
         2,
         "Invalid DOM snapshot size ratio"
     );
@@ -145,7 +145,7 @@ await test("Take DOM snapshot (S)", async () => {
 });
 
 await test("Take DOM snapshot (linearized)", async () => {
-    const snapshot = await d2Snap(readFile("pizza"), Infinity, 1.0, 1.0, {
+    const snapshot = await d2Snap(readFile("pizza"), Infinity, 0, 1.0, {
         debug: true
     });
 
@@ -154,7 +154,7 @@ await test("Take DOM snapshot (linearized)", async () => {
 
     assertAlmostEqual(
         snapshot.meta.sizeRatio,
-        0.31,
+        0.36,
         2,
         "Invalid DOM snapshot size ratio"
     );

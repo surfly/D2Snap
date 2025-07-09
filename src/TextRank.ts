@@ -19,10 +19,10 @@ function initMatrix(n: number, m: number = n): number[][] {
         .map(() => initArray(m));
 }
 
-function tokenizeSentences(text: string): string[] {
+export function tokenizeSentences(text: string): string[] {
     return text
         .replace(/[^\w\s.?!:]+/g, "")
-        .split(/(?=[.?!:])\s|\n|\r/g)
+        .split(/[.?!:]\s|\n|\r/g)
         .map((rawSentence: string) => rawSentence.trim())
         .filter((sentence: string) => !!sentence);
 }

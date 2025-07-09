@@ -12,8 +12,8 @@ function wrapAssertion(cb, actual = null, expected = null, relationHint = null) 
             process.exit(1);
         }
 
-        console.error("\x1b[31mAssertion Error\x1b[0m");
-        console.log(`\x1b[2mEXPECTED${relationHint ? `(${relationHint})` : ""}:\x1b[0m`, expected ?? err.expected);
+        console.error(`\x1b[31mAssertion Error${err.message ? ` '${err.message}'` : ""}\x1b[0m`);
+        console.log(`\x1b[2mEXPECTED${relationHint ? ` (${relationHint})` : ""}:\x1b[0m`, expected ?? err.expected);
         console.log("\x1b[2mACTUAL:\x1b[0m", actual ?? err.actual);
 
         process.exit(2);
@@ -60,9 +60,9 @@ process.on("exit", code => {
 
 
 [
-    "test.D2Snap",
+    "test.Turndown",
     "test.TextRank",
-    "test.Turndown"
+    "test.D2Snap"
 ]
     .forEach(async reference => {
         await import(join(import.meta.dirname, reference.replace(/(\.js)?$/i, ".js")));

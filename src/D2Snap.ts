@@ -1,3 +1,8 @@
+// ------------------------------------------
+// Copyright (c) Thassilo M. Schiepanski
+// ------------------------------------------
+
+
 import { TextNode, HTMLElementDepth, DOM, D2SnapOptions, Snapshot, NodeFilter, Node } from "./D2Snap.types.ts";
 import { formatHtml, findDownsamplingRoot, traverseDom } from "./util.ts";
 import { relativeTextRank } from "./TextRank.ts";
@@ -289,42 +294,58 @@ export async function adaptiveD2Snap(
         adaptiveIterations: number;
     }
 }> {
-    /**
-     * Let S be a positive natural number denoting a DOM size (in B):
-     * M := 1,000,000                   magnitude (MB)
-     * k := ⌊e^((2 / M) * S)⌉           exponentially increase fold from 1 (~10 at M)
-     * l := ⌊98 * e^(-(4 / M) * S) + 2⌉ exponentially decrease word keep from 100 (~2 beyond magnitude)
-     * m := e^(-(4 / M) * S)            exponentially decrease attribute keep
-     */
-
     const S = findDownsamplingRoot(dom).outerHTML.length;
-    const M = 1000000;
+    const M = 1e6;
 
-    const computeParameters = S => {
-        return {
-            /* k: Math.round(Math.E**((2 / M) * S)),
-            l: Math.round(98 * Math.E**(-(4 / M) * S) + 2),
-            m: Math.E**(-(4 / M) * S) */
-            k: Math.E**(-(4 / M) * S),
-            l: Math.E**(-(4 / M) * S),
-            m: Math.E**(-(4 / M) * S)
+    function* generateHalton() {
+        const halton = (index: number, base: number) => {
+            let result: number = 0;
+            let f: number = 1 / base;
+            let i: number = index;
+            while(i > 0) {
+                result += f * (i % base);
+                i = Math.floor(i / base);
+                f /= base;
+            }
+            return result;
         };
-    };
+
+        let i = 0;
+        while(true) {
+            i++;
+
+            yield [
+                halton(i, 2),
+                halton(i, 3),
+                halton(i, 5)
+            ];
+        }
+    }
+
 
     let i = 0;
+    let sCalc = S;
     let parameters, snapshot;
-    do {
-        i++;
+    const haltonGenerator = generateHalton();
+    while(true) {
+        const haltonPoint = haltonGenerator.next().value;
 
-        // stretch by i^(1/4)
-        parameters = computeParameters(S * i**0.75);
+        const computeParam = (haltonValue: number) => Math.min((sCalc / M) * haltonValue, 1);
+
+        parameters = {
+            k: computeParam(haltonPoint[0]),
+            l: computeParam(haltonPoint[1]),
+            m: computeParam(haltonPoint[2])
+        };
         snapshot = await d2Snap(dom, parameters.k, parameters.l, parameters.m, options);
+        sCalc = sCalc**1.125;   // stretch
 
-        i++;
-    } while(snapshot.estimatedTokens > maxTokens && i < maxIterations);
+        if(snapshot.meta.estimatedTokens <= maxTokens)
+            break;
 
-    if(i === maxIterations)
-        throw new RangeError("Unable to create snapshot below given token threshold");
+        if(i++ === maxIterations)
+            throw new RangeError("Unable to create snapshot below given token threshold");
+    }
 
     return {
         ...snapshot,
