@@ -105,12 +105,17 @@ export function textRank(textOrSentences: string|string[], k: number = 3, option
         .join(" ");
 }
 
-export function relativeTextRank(text: string, ratio: number = 0.5, options: Partial<TextRankOptions> = {}): string {
+export function relativeTextRank(
+    text: string,
+    ratio: number = 0.5,
+    options: Partial<TextRankOptions> = {},
+    noEmpty: boolean = false
+): string {
     const sentences: string[] = tokenizeSentences(text);
     const k: number = Math.max(
         Math.round(sentences.length * ratio),
         1
     );
 
-    return textRank(sentences, k, options);
+    return textRank(sentences, Math.max(k, +noEmpty), options);
 }

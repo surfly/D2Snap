@@ -106,13 +106,14 @@ function textRank(textOrSentences, k = 3, options = {}) {
     };
   }).sort((a, b) => b.score - a.score).slice(0, Math.min(k, sentences.length)).sort((a, b) => a.index - b.index).map((obj) => obj.sentence).join(" ");
 }
-function relativeTextRank(text, ratio = 0.5, options = {}) {
+function relativeTextRank(text, ratio = 0.5, options = {}, noEmpty = false) {
   const sentences = tokenizeSentences(text);
   const k = Math.max(
     Math.round(sentences.length * ratio),
     1
   );
-  return textRank(sentences, k, options);
+  console.log(k, ratio, +noEmpty, Math.max(k, +noEmpty));
+  return textRank(sentences, Math.max(k, +noEmpty), options);
 }
 
 // src/Turndown.ts
@@ -395,7 +396,7 @@ async function d2Snap(dom, k = 0.4, l = 0.5, m = 0.6, options = {}) {
   function snapTextNode(textNode, l2) {
     if (textNode.nodeType !== 3 /* TEXT_NODE */) return;
     const text = textNode?.innerText ?? textNode.textContent;
-    textNode.textContent = relativeTextRank(text, 1 - l2);
+    textNode.textContent = relativeTextRank(text, 1 - l2, void 0, true);
   }
   function snapAttributeNode(elementNode, m2) {
     if (elementNode.nodeType !== 1 /* ELEMENT_NODE */) return;
@@ -431,7 +432,7 @@ async function d2Snap(dom, k = 0.4, l = 0.5, m = 0.6, options = {}) {
     virtualDom,
     1 /* SHOW_ELEMENT */,
     (elementNode) => {
-      if (FILTER_TAG_NAMES.includes(elementNode.tagName.toUpperCase())) return;
+      if (!FILTER_TAG_NAMES.includes(elementNode.tagName.toUpperCase())) return;
       elementNode.parentNode?.removeChild(elementNode);
     }
   );

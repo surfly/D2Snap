@@ -1,6 +1,6 @@
-// ------------------------------------------
+// -------------------------------------
 // Copyright (c) Thassilo M. Schiepanski
-// ------------------------------------------
+// -------------------------------------
 
 
 import { TextNode, HTMLElementDepth, DOM, D2SnapOptions, Snapshot, NodeFilter, Node } from "./D2Snap.types.ts";
@@ -12,7 +12,14 @@ import CONFIG from "./config.json" with { type: "json" };
 import RATING from "./rating.json" with { type: "json" };
 
 
-function checkParam(param: number, allowInfinity: boolean = false) {
+const FILTER_TAG_NAMES = [
+    "SCRIPT",
+    "STYLE",
+    "LINK"
+];
+
+
+function validateParam(param: number, allowInfinity: boolean = false) {
     if(allowInfinity && param === Infinity) return;
 
     if(param < 0 || param > 1)
@@ -31,9 +38,9 @@ export async function d2Snap(
     k: number = 0.4, l: number = 0.5, m: number = 0.6,
     options: D2SnapOptions = {}
 ): Promise<Snapshot> {
-    checkParam(k, true);
-    checkParam(l);
-    checkParam(m);
+    validateParam(k, true);
+    validateParam(l);
+    validateParam(m);
 
     const optionsWithDefaults = {
         debug: false,
@@ -161,7 +168,7 @@ export async function d2Snap(
 
         const text: string = (textNode?.innerText ?? textNode.textContent);
 
-        textNode.textContent = relativeTextRank(text, (1 - l));
+        textNode.textContent = relativeTextRank(text, (1 - l), undefined, true);
     }
 
     function snapAttributeNode(elementNode: HTMLElement, m: number) {
@@ -198,6 +205,26 @@ export async function d2Snap(
 
     const virtualDom = partialDom.cloneNode(true) as HTMLElement;
 
+    // Prepare
+    await traverseDom<Comment>(
+        dom,
+        virtualDom,
+        NodeFilter.SHOW_COMMENT,
+        node => node.parentNode?.removeChild(node)
+    );
+    await traverseDom<Element>(
+        dom,
+        virtualDom,
+        NodeFilter.SHOW_ELEMENT,
+        elementNode => {
+            if(!FILTER_TAG_NAMES.includes(elementNode.tagName.toUpperCase())) return;
+
+            elementNode
+                .parentNode
+                ?.removeChild(elementNode);
+        }
+    );
+
     let domTreeHeight: number = 0;
     await traverseDom<Element>(
         dom,
@@ -210,14 +237,6 @@ export async function d2Snap(
 
             domTreeHeight = Math.max(depth, domTreeHeight);
         }
-    );
-
-    // Prepare
-    await traverseDom<Comment>(
-        dom,
-        virtualDom,
-        NodeFilter.SHOW_COMMENT,
-        node => node.parentNode?.removeChild(node)
     );
 
     // D2Snap implementation harnessing the power of the TreeWalkers API:
