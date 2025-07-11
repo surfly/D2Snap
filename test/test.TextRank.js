@@ -25,7 +25,6 @@ await test("Tokenize sentences", async () => {
     );
 });
 
-
 await test("Summarize text via TextRank sentence algorithm (k = 3)", async () => {
     const summary = textRank(`
         Amsterdam (AM-stər-dam, AM-stər-DAM; Dutch: [ˌɑmstərˈdɑm]; lit. 'Dam in the Amstel') is the capital and largest city of the Kingdom of the Netherlands.

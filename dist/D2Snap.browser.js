@@ -1145,7 +1145,12 @@
   };
 
   // src/D2Snap.ts
-  function checkParam(param, allowInfinity = false) {
+  var FILTER_TAG_NAMES = [
+    "SCRIPT",
+    "STYLE",
+    "LINK"
+  ];
+  function validateParam(param, allowInfinity = false) {
     if (allowInfinity && param === Infinity) return;
     if (param < 0 || param > 1)
       throw new RangeError(`Invalid parameter ${param}, expects value in [0, 1]`);
@@ -1154,9 +1159,9 @@
     return rating_default.typeElement[type].tagNames.includes(elementNode.tagName.toLowerCase());
   }
   async function d2Snap(dom, k = 0.4, l = 0.5, m = 0.6, options = {}) {
-    checkParam(k, true);
-    checkParam(l);
-    checkParam(m);
+    validateParam(k, true);
+    validateParam(l);
+    validateParam(m);
     const optionsWithDefaults = {
       debug: false,
       assignUniqueIDs: false,
@@ -1259,6 +1264,21 @@
       }
     );
     const virtualDom = partialDom.cloneNode(true);
+    await traverseDom(
+      dom,
+      virtualDom,
+      128 /* SHOW_COMMENT */,
+      (node) => node.parentNode?.removeChild(node)
+    );
+    await traverseDom(
+      dom,
+      virtualDom,
+      1 /* SHOW_ELEMENT */,
+      (elementNode) => {
+        if (FILTER_TAG_NAMES.includes(elementNode.tagName.toUpperCase())) return;
+        elementNode.parentNode?.removeChild(elementNode);
+      }
+    );
     let domTreeHeight = 0;
     await traverseDom(
       dom,
@@ -1269,12 +1289,6 @@
         elementNode.depth = depth;
         domTreeHeight = Math.max(depth, domTreeHeight);
       }
-    );
-    await traverseDom(
-      dom,
-      virtualDom,
-      128 /* SHOW_COMMENT */,
-      (node) => node.parentNode?.removeChild(node)
     );
     await traverseDom(
       dom,
