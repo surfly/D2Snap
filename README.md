@@ -1,8 +1,8 @@
 # D2Snap
 
-**D2Snap** is a first-of-its-kind DOM downsampling algorithm, designed for use with LLM-based web agents.  
-
 ![Example of downsampling on an image (top) and a DOM (bottom) instance](./.github/downsampling.png)
+
+**D2Snap** is a first-of-its-kind DOM downsampling algorithm, designed for use with LLM-based web agents.  
 
 ## Setup
 
@@ -17,11 +17,13 @@ npm install
 ### Evaluate
 
 ``` console
-npm run eval
+npm run eval:<snapshot>
 ```
 
+> `<snapshot>` ∈ { `gui`, `dom`, `D2Snap` }
+
 ``` console
-npm run eval:D2Snap -- --split 3 --verbose --provider openai --model gpt-4o
+npm run eval:D2Snap -- --verbose --split 10,20 --provider openai --model gpt-4o
 ```
 
 ### Build
@@ -34,4 +36,10 @@ npm run build
 
 ``` console
 npm run test
+```
+
+### Re-create Snapshots
+
+``` console
+npm run snapshots:create
 ```
