@@ -1,23 +1,26 @@
-import { mkdirSync, readFileSync, writeFileSync } from "fs";
+import { readFileSync } from "fs";
 import { join } from "path";
 
-import { OpenAIAdapter, AnthropicAdapter } from "./Adapter.js";
+import { JSDOM } from "jsdom";
+
+import { OpenAIAdapter, AnthropicAdapter } from "./LLMAdapter.js";
+import { Logger } from "./Logger.js";
 
 
 const RAW_ARGS = [ undefined, ...process.argv.slice(2) ];
-const parseFlag = arg => !!~RAW_ARGS.indexOf(arg);
-const parseOption = arg => RAW_ARGS[RAW_ARGS.indexOf(arg) + 1];
+export const parseFlag = arg => !!~RAW_ARGS.indexOf(arg);
+export const parseOption = arg => RAW_ARGS[RAW_ARGS.indexOf(arg) + 1];
 
-const RESULTS_DIR_PATH = join(import.meta.dirname, "results");
 const DATASET = loadDataset();
 const REFERENCE = await loadReference();
 const { API_ADAPTER, PROVIDER, MODEL } = (() => {
     const provider = parseOption("--provider") ?? "openai";
 
-    let model, adapter;
+    let model = parseOption("--model");
+    let adapter;
     switch(provider) {
         case "openai":
-            model = parseOption("--model") ?? "gpt-4o";
+            model = model ?? "gpt-4o";
             adapter = new OpenAIAdapter(
                 model,
                 process.env.OPENAI_API_KEY
@@ -25,7 +28,7 @@ const { API_ADAPTER, PROVIDER, MODEL } = (() => {
 
             break;
         case "anthropic":
-            model = parseOption("--model") ?? "claude-3-7-sonnet-latest";
+            model = model ?? "claude-sonnet-4-latest";
             adapter = new AnthropicAdapter(
                 model,
                 process.env.ANTHROPIC_API_KEY
@@ -50,12 +53,8 @@ function print(message, always = false) {
     console.log(`\x1b[2m${message}\x1b[0m`);
 }
 
-function loadInstructions(name = "prefix") {
-    return readFileSync(join(import.meta.dirname, "dataset", `instructions.${name}.md`)).toString();
-}
-
 function loadDataset() {
-    const raw = readFileSync(join(import.meta.dirname, "dataset", "data.jsonl")).toString();
+    const raw = readFileSync(join(import.meta.dirname, "../dataset", "data.jsonl")).toString();
     return raw
         .split(/\n/g)
         .map(record => record.trim())
@@ -64,7 +63,9 @@ function loadDataset() {
 }
 
 async function loadReference() {
-    const reference = (await import(join(import.meta.dirname, "dataset", "reference.json"), { with: { type: "json" } })).default;
+    const reference = (await import(
+        join(import.meta.dirname, "../dataset", "reference.json"), { with: { type: "json" } })
+    ).default;
     return new Map(
         reference
             .map(record => [ record.id, record ])
@@ -75,26 +76,71 @@ async function loadReference() {
 export async function runEvaluation(
     identifier,
     snapshotLoaderCb,
-    resultsAnalysisCb,
-    outputSchema,
-    instructionsSuffix
+    analyzeResultsCb,
+    instructions,
+    outputSchema
 ) {
     print(`Evaluating ${identifier}...`, true);
 
     const t0 = Date.now();
-
     const results = [];
+
+    process.on("exit", () => {
+        new Logger("../results", false)
+            .write(identifier.replace(/(\.json)?$/i, ".json"), JSON.stringify({
+                endpoint: `${PROVIDER}: ${MODEL}`,
+                date: new Date().toISOString(),
+                results
+            }, null, 2));
+    });
 
     const abbrev = (str, limit = 100) => (str.length > limit) ? `${str.slice(0, limit)}${(str.length > limit) ? "…" : ""}` : str;
 
-    const splitSize = parseInt(parseOption("--split") ?? "0") || Infinity;
-    for(let i = 0; i < Math.min(DATASET.length, splitSize); i++) {
-        const record = DATASET[i];
+    const split = (parseOption("--split") ?? "0").split(",");
+    const splitSize = parseInt(split[0]) || Infinity;
+    const splitOffset = parseInt(split[1]) || 0;
+    const splitOffsetEnd = Math.min(DATASET.length, splitSize + splitOffset);
+    print(`Split ${splitOffset} - ${splitOffsetEnd}`);
 
-        const ti0 = Date.now();
+    for(let i = splitOffset; i < splitOffsetEnd; i++) {
+        const record = DATASET[i];
  
-        const snapshotData = await snapshotLoaderCb(record.id);
-        const snapshotDataPrint = snapshotData.path ?? snapshotData.data.replace(/\s+/g, " ");
+        const readGUISnapshot = dir => {
+            const path = join(import.meta.dirname, "../dataset", dir, `${record.id}.png`);
+            return {
+                path,
+                data: readFileSync(path)
+            };
+        };
+        const readDOMSnapshot = () => {
+            const raw = readFileSync(join(import.meta.dirname, "../dataset", "dom", `${record.id}.html`)).toString();
+
+            const { document } = new JSDOM(raw).window;
+        
+            return document;
+        };
+
+        const rawSnapshots = {
+            originalDOM: readDOMSnapshot(),
+            originalGUI: readGUISnapshot("gui"),
+            buGUI: readGUISnapshot("bu"),
+            buTxt: readFileSync(join(import.meta.dirname, "../dataset", "bu", `${record.id}.txt`)).toString()
+        };
+        const snapshotData = await snapshotLoaderCb(rawSnapshots, record.id);
+        if(!snapshotData) {
+            results.push({
+                id: record.id,
+                success: false,
+                error: true
+            });
+
+            continue;
+        }
+
+        const snapshotDataPrint = (
+            snapshotData.path
+            ?? snapshotData[0].data.replace(/\s+/g, " ")
+        );
         print(`(${i}) ${record.url}`, true);
         print([
             record.task,
@@ -103,53 +149,46 @@ export async function runEvaluation(
 
         let llmResponse;
         let autoAnalysisWasSuccessful = false;
+        let rtt;
         try {
+            const ti0 = performance.now();
             const res = await API_ADAPTER.request(
-                [
-                    loadInstructions()
-                ].concat(
-                    instructionsSuffix
-                        ? [ loadInstructions(`suffix.${instructionsSuffix}`) ]
-                        : []
-                ),
+                instructions,
                 record.task,
                 snapshotData,
                 outputSchema
             );
+            rtt = performance.now() - ti0;
 
             llmResponse = res.interactiveElements;
 
-            autoAnalysisWasSuccessful = await resultsAnalysisCb(
+            autoAnalysisWasSuccessful = await analyzeResultsCb(
                 res.interactiveElements,
-                REFERENCE.get(record.id),
-                snapshotData.data,
-                snapshotData.rawData
-            );
+                REFERENCE.get(record.id).trajectories,
+                rawSnapshots
+        );
         } catch(err) {
+            console.error(err);
+
             llmResponse = err?.message ?? "Error";
         }
 
-        const result = {
+        results.push({
             id: record.id,
-            snapshotSize: snapshotData.size,
-            estimatedTokens: snapshotData.estimatedTokens,
+            snapshotSize: snapshotData
+                .reduce((acc, snapshot) => acc + snapshot.size, 0),
+            estimatedTokens: snapshotData
+                .reduce((acc, snapshot) => {
+                    return acc + (snapshot.type !== "image")
+                        ? Math.round(snapshot.size / 4)         // according to https://platform.openai.com/tokenizer
+                        : Math.round(snapshot.size / (32**2));  // according to https://platform.openai.com/docs/guides/images-vision?api-mode=responses#calculating-costs
+                }, 0),
             response: llmResponse,
             success: autoAnalysisWasSuccessful,
-            time: Math.round(Date.now() - ti0)
-        };
-
-        results.push(result);
+            error: false,
+            rtt
+        });
     }
-
-    const resultsFilePath = join(RESULTS_DIR_PATH, identifier.replace(/(\.json)?$/i, ".json"));
-    mkdirSync(RESULTS_DIR_PATH, {
-        recursive: true
-    });
-    writeFileSync(resultsFilePath, JSON.stringify({
-        endpoint: `${PROVIDER}: ${MODEL}`,
-        date: new Date().toISOString(),
-        results
-    }, null, 2));
 
     print(`...done (${Math.round((Date.now() - t0) / 1000)}s).`, true);
 }

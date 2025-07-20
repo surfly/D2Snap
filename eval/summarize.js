@@ -1,43 +1,50 @@
-import { writeFileSync } from "fs";
+import { existsSync, readdirSync, writeFileSync } from "fs";
 import { join } from "path";
 
 
-const EVALS = [
-    "results.gui",
-    "results.dom",
-    "results.D2Snap.adaptive",
-    "results.D2Snap.3-3-3",
-];
+const RESULTS_DIR_PATH = join(import.meta.dirname, "results");
+if(!existsSync(RESULTS_DIR_PATH))
+    throw new ReferenceError("Run evaluation first");
 
 
 const summary = {};
 
 await Promise.all(
-    EVALS.map(async resultsFileName => {
-        const resultsFilePath = join(import.meta.dirname, resultsFileName.replace(/(\.json)?$/, ".json"));
-        const results = (await import(resultsFilePath, { with: { type: "json" } })).default;
+    readdirSync(RESULTS_DIR_PATH)
+        .map(async resultsFileName => {
+            const resultsFilePath = join(RESULTS_DIR_PATH, resultsFileName);
+            const results = (await import(resultsFilePath, { with: { type: "json" } })).default;
 
-        summary[resultsFileName] = {
-            success: 0,
-            failure: 0,
-            successRate: 0.0,
-            meanSnapshotSize: 0.0,
-            meanEstimatedTokens: 0.0,
-            meanTime: 0.0
-        };
-        results.forEach((result, i) => {
-            const mean = (key1, key2) => {
-                return ((summary[resultsFileName][key1] ?? 0) + +result[key2]) / (i + 1);
+            summary[resultsFileName] = {
+                successCases: 0,
+                failureCases: 0,
+                errorCases: 0,
+                successRate: 0.0,
+                totalSnapshotSize: 0,
+                totalEstimatedTokens: 0,
+                totalRTT: 0
             };
+            results
+                .results
+                .forEach(result => {
+                    summary[resultsFileName].successCases += +result.success;
+                    summary[resultsFileName].failureCases += +!result.success;
+                    summary[resultsFileName].errorCases += +result.error;
+                    summary[resultsFileName].totalSnapshotSize += +result.snapshotSize;
+                    summary[resultsFileName].totalEstimatedTokens += +result.estimatedTokens;
+                    summary[resultsFileName].totalRTT += +result.rtt;
+                });
 
-            summary[resultsFileName].success += +result.success;
-            summary[resultsFileName].failure += +!result.success;
-            summary[resultsFileName].successRate = mean("successRate", "success");
-            summary[resultsFileName].meanSnapshotSize = mean("meanSnapshotSize", "snapshotSize");
-            summary[resultsFileName].meanEstimatedTokens = mean("meanEstimatedTokens", "estimatedTokens");
-            summary[resultsFileName].time = mean("meanTime", "time");
-        });
-    });
+            const totalCases = summary[resultsFileName].successCases + summary[resultsFileName].failureCases;
+
+            const mean = (key) => summary[resultsFileName][key] / totalCases;
+
+            summary[resultsFileName].successRate = mean("successCases");
+            summary[resultsFileName].errorRate = mean("errorCases");
+            summary[resultsFileName].meanSnapshotSize = mean("totalSnapshotSize");
+            summary[resultsFileName].meanEstimatedTokens = mean("totalEstimatedTokens");
+            summary[resultsFileName].meanRTT = mean("totalRTT");
+        })
 );
 
 

@@ -10,3 +10,5 @@ snapshots/candidates
 
 eval/summary.json
 eval/results/
+eval/results-archive/
+eval/logs/

@@ -1,4 +1,4 @@
-import { DOM } from "./D2Sna.types";
+import { DOM } from "./D2Snap.types";
 
 
 export function findDownsamplingRoot(dom: DOM): HTMLElement {

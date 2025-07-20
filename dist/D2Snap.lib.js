@@ -112,7 +112,6 @@ function relativeTextRank(text, ratio = 0.5, options = {}, noEmpty = false) {
     Math.round(sentences.length * ratio),
     1
   );
-  console.log(k, ratio, +noEmpty, Math.max(k, +noEmpty));
   return textRank(sentences, Math.max(k, +noEmpty), options);
 }
 
