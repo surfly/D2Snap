@@ -1,0 +1,52 @@
+{ "id": "apple-0", "url": "https://www.apple.com/", "task": "Find technical specs for the latest Macbook Air on Apple." }
+{ "id": "apple-1", "url": "https://www.apple.com/mac/", "task": "Find technical specs for the latest Macbook Air on Apple." }
+{ "id": "apple-2", "url": "https://www.apple.com/macbook-air/", "task": "Find technical specs for the latest Macbook Air on Apple." }
+{ "id": "drugs-0", "url": "https://www.drugs.com/", "task": "Check the interaction between Novolin N and Novolin R." }
+{ "id": "drugs-1", "url": "https://www.drugs.com/drug_interactions.html", "task": "Check the interaction between Novolin N and Novolin R." }
+{ "id": "drugs-2", "url": "https://www.drugs.com/drug_interactions.html", "task": "Check the interaction between Novolin N and Novolin R." }
+{ "id": "foxsports-0", "url": "https://www.foxsports.com/", "task": "Check the current standings for MLS on Fox Sports." }
+{ "id": "foxsports-1", "url": "https://www.foxsports.com/", "task": "Check the current standings for MLS on Fox Sports." }
+{ "id": "foxsports-2", "url": "https://www.foxsports.com/", "task": "Check the current standings for MLS on Fox Sports." }
+{ "id": "foxsports-3", "url": "https://www.foxsports.com/", "task": "Check the current standings for MLS on Fox Sports." }
+{ "id": "foxsports-4", "url": "https://www.foxsports.com/", "task": "Check the current standings for MLS on Fox Sports." }
+{ "id": "foxsports-5", "url": "https://www.foxsports.com/soccer/mls", "task": "Check the current standings for MLS on Fox Sports." }
+{ "id": "govuk-0", "url": "https://www.gov.uk/", "task": "Check if a visa is required to work in the UK for longer than 6 months in Healthcare as an American citizen." }
+{ "id": "govuk-1", "url": "https://www.gov.uk/search/all?keywords=visa", "task": "Check if a visa is required to work in the UK for longer than 6 months in Healthcare as an American citizen." }
+{ "id": "govuk-2", "url": "https://www.gov.uk/check-uk-visa", "task": "Check if a visa is required to work in the UK for longer than 6 months in Healthcare as an American citizen." }
+{ "id": "govuk-3", "url": "https://www.gov.uk/check-uk-visa/y", "task": "Check if a visa is required to work in the UK for longer than 6 months in Healthcare as an American citizen." }
+{ "id": "govuk-4", "url": "https://www.gov.uk/check-uk-visa/y/usa", "task": "Check if a visa is required to work in the UK for longer than 6 months in Healthcare as an American citizen." }
+{ "id": "govuk-5", "url": "https://www.gov.uk/check-uk-visa/y/usa/work", "task": "Check if a visa is required to work in the UK for longer than 6 months in Healthcare as an American citizen." }
+{ "id": "govuk-6", "url": "https://www.gov.uk/check-uk-visa/y/usa/work/longer_than_six_months", "task": "Check if a visa is required to work in the UK for longer than 6 months in Healthcare as an American citizen." }
+{ "id": "landwatch-0", "url": "https://www.landwatch.com/", "task": "Look for the largest hunting land for auction in Kansas high plain region with mineral rights posted in the last seven days." }
+{ "id": "landwatch-1", "url": "https://www.landwatch.com/kansas-land-for-sale/high-plains-region", "task": "Look for the largest hunting land for auction in Kansas high plain region with mineral rights posted in the last seven days." }
+{ "id": "macys-0", "url": "https://www.macys.com/", "task": "Check the details of order 12345 with email 12345@gmail.com." }
+{ "id": "macys-1", "url": "https://www.macys.com/purchases/international", "task": "Check the details of order 12345 with email 12345@gmail.com." }
+{ "id": "mega-0", "url": "https://mega.io/", "task": "View the pricing plan for 'Business'. Specifically, we have 100 users. We need a 1PB storage quota and a 50 TB transfer quota." }
+{ "id": "mega-1", "url": "https://mega.io/pricing", "task": "View the pricing plan for 'Business'. Specifically, we have 100 users. We need a 1PB storage quota and a 50 TB transfer quota." }
+{ "id": "mega-2", "url": "https://mega.io/pricing#team", "task": "View the pricing plan for 'Business'. Specifically, we have 100 users. We need a 1PB storage quota and a 50 TB transfer quota." }
+{ "id": "nba-0", "url": "https://www.nba.com/", "task": "Find the current league leader in total blocked shots." }
+{ "id": "nba-1", "url": "https://www.nba.com/stats", "task": "Find the current league leader in total blocked shots." }
+{ "id": "pypi-0", "url": "https://pypi.org/", "task": "Find me Python 3.9 packages on PyPI that are designed for the Web Environment, licensed under MIT, have a stable production status, and are intended for developers." }
+{ "id": "pypi-1", "url": "https://pypi.org/search/", "task": "Find me Python 3.9 packages on PyPI that are designed for the Web Environment, licensed under MIT, have a stable production status, and are intended for developers." }
+{ "id": "pypi-2", "url": "https://pypi.org/search/", "task": "Find me Python 3.9 packages on PyPI that are designed for the Web Environment, licensed under MIT, have a stable production status, and are intended for developers." }
+{ "id": "redfin-0", "url": "https://www.redfin.com/", "task": "Find the latest 2 bed and 1.5+ bath apartment listing for rent in New York." }
+{ "id": "redfin-1", "url": "https://www.redfin.com/city/30749/NY/New-York/rentals", "task": "Find the latest 2 bed and 1.5+ bath apartment listing for rent in New York." }
+{ "id": "rottentomatoes-0", "url": "https://www.rottentomatoes.com/", "task": "View the list of the Most Popular TV on rotten tomatoes." }
+{ "id": "rottentomatoes-1", "url": "https://www.rottentomatoes.com/browse/tv_series_browse", "task": "View the list of the Most Popular TV on rotten tomatoes." }
+{ "id": "target-0", "url": "https://www.target.com/", "task": "Search for a job in Miami, Florida, in Human Resources on target." }
+{ "id": "target-1", "url": "https://corporate.target.com/careers", "task": "Search for a job in Miami, Florida, in Human Resources on target." }
+{ "id": "thumbtack-0", "url": "https://www.thumbtack.com/", "task": "Find Linux platform software developers in 10080 who master the Python language and Java language with web interface project type." }
+{ "id": "thumbtack-1", "url": "https://www.thumbtack.com/instant-results/?keyword_pk=132477063054863149&zip_code=10080&user_query_pk=551105388323684367", "task": "Find Linux platform software developers in 10080 who master the Python language and Java language with web interface project type." }
+{ "id": "uniqlo-0", "url": "https://www.uniqlo.com/", "task": "Show me the list of Men's Blazers, Black, Size M on Uniqlo." }
+{ "id": "uniqlo-1", "url": "https://www.uniqlo.com/", "task": "Show me the list of Men's Blazers, Black, Size M on Uniqlo." }
+{ "id": "uniqlo-2", "url": "https://www.uniqlo.com/", "task": "Show me the list of Men's Blazers, Black, Size M on Uniqlo." }
+{ "id": "uniqlo-3", "url": "https://www.uniqlo.com/eu-at/en/men/outerwear/jackets", "task": "Show me the list of Men's Blazers, Black, Size M on Uniqlo." }
+{ "id": "ups-0", "url": "https://www.ups.com/", "task": "Find a UPS Access Point near SPRING, TX and services provided by them." }
+{ "id": "ups-1", "url": "https://www.ups.com/", "task": "Find a UPS Access Point near SPRING, TX and services provided by them." }
+{ "id": "ups-2", "url": "https://www.ups.com/", "task": "Find a UPS Access Point near SPRING, TX and services provided by them." }
+{ "id": "usps-0", "url": "https://www.usps.com/", "task": "Calculate the price to ship a large flat-rate box from 77449 to 77084 at the first available date and time." }
+{ "id": "usps-1", "url": "https://www.usps.com/ship/", "task": "Calculate the price to ship a large flat-rate box from 77449 to 77084 at the first available date and time." }
+{ "id": "usps-2", "url": "https://postcalc.usps.com/", "task": "Calculate the price to ship a large flat-rate box from 77449 to 77084 at the first available date and time." }
+{ "id": "walmart-0", "url": "https://careers.walmart.com/", "task": "Find support services jobs in Bentonville, in the state of Arkansas." }
+{ "id": "webmd-0", "url": "https://www.webmd.com/", "task": "Search for the ovulation calculator and enter Jul 21 as the first date of the period and calculate the date of ovulation and pregnancy test day." }
+{ "id": "webmd-1", "url": "https://www.webmd.com/baby/healthtool-ovulation-calculator", "task": "Search for the ovulation calculator and enter Jul 21 as the first date of the period and calculate the date of ovulation and pregnancy test day." }
