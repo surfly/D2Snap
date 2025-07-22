@@ -27,22 +27,6 @@ const baseInstructionsBU = {
 };
 
 
-function loadSnapshotBU(data) {
-    return [
-        {
-            type: "image",
-            data: data.buGUI.data,
-            path: data.buGUI.path,
-            size: Buffer.byteLength(data.buGUI.data)
-        },
-        {
-            type: "text",
-            data: data.buTxt,
-            size: data.buTxt.length
-        }
-    ];
-}
-
 function analyzeResultBU(res, trajectories) {
     return checkAgainstTrajectories(res, trajectories, (resElement, referenceElement) => {
         return (resElement.numericalIdentifier === referenceElement.bu_identifier);
@@ -51,7 +35,21 @@ function analyzeResultBU(res, trajectories) {
 
 runEvaluation(
     "bu",
-    loadSnapshotBU,
+    (data) => {
+        return [
+            {
+                type: "image",
+                data: data.buGUI.data,
+                path: data.buGUI.path,
+                size: Buffer.byteLength(data.buGUI.data)
+            },
+            {
+                type: "text",
+                data: data.buTxt,
+                size: data.buTxt.length
+            }
+        ];
+    },
     analyzeResultBU,
     templateInstructions({
         ...baseInstructionsBU,
@@ -60,7 +58,7 @@ runEvaluation(
 You are provided with two means of input:
 
 1. A screenshot of the browser with bounding boxes and related numeric identifiers.
-2. A list of interactive elements will with format \`[index] type "text"\`. \`index\` is the numeric identifier, \`type\` is an HTML element type (button, input, etc.), and \`text\` is the element description.
+2. A list of interactive elements with format \`[index] type "text"\`. \`index\` is the numeric identifier, \`type\` is an HTML element type (button, input, etc.), and \`text\` is the element description.
 
 > Numeric identifiers across means of input are consistent.
         `,
@@ -82,13 +80,21 @@ data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAACWCAIAAAAUvlBOAAAACXBIWXMAAD
 
 runEvaluation(
     "bu.min",
-    loadSnapshotBU,
+    (data) => {
+        return [
+            {
+                type: "text",
+                data: data.buTxt,
+                size: data.buTxt.length
+            }
+        ];
+    },
     analyzeResultBU,
     templateInstructions({
         ...baseInstructionsBU,
 
         SNAPSHOT_DESCRIPTION: `
-You are provided with a list of interactive elements will with format \`[index] type "text"\`. \`index\` is the numeric identifier, \`type\` is an HTML element type (button, input, etc.), and \`text\` is the element description.
+You are provided with a list of interactive elements with format \`[index] type "text"\`. \`index\` is the numeric identifier, \`type\` is an HTML element type (button, input, etc.), and \`text\` is the element description.
         `,
         SCHEMA_DESCRIPTION: "Target elements by their numeric identifiers as given with input.",
         EXAMPLE_SNAPSHOT: `

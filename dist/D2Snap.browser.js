@@ -1135,7 +1135,6 @@
         wrap: 0.2,
         hidden: 0.1,
         style: 0.1,
-        "data-*": 0.1,
         content: 0.1,
         "http-equiv": 0.1,
         "data-uid": 1,
@@ -1352,9 +1351,9 @@
       while (true) {
         i2++;
         yield [
-          halton(i2, 2),
+          halton(i2, 7),
           halton(i2, 3),
-          halton(i2, 5)
+          halton(i2, 3)
         ];
       }
     }

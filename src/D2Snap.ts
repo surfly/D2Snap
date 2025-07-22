@@ -334,9 +334,9 @@ export async function adaptiveD2Snap(
             i++;
 
             yield [
-                halton(i, 5),
-                halton(i, 2),
-                halton(i, 2)
+                halton(i, 7),
+                halton(i, 3),
+                halton(i, 3)
             ];
         }
     }
