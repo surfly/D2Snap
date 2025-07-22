@@ -10,7 +10,7 @@ runEvaluation(
         return [
             {
                 type: "image",
-                data: Buffer.from(data.originalGUI.data).toString("base64"),
+                data: data.originalGUI.data,
                 path: data.originalGUI.path,
                 size: Buffer.byteLength(data.originalGUI.data)
             }

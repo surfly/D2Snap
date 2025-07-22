@@ -2,8 +2,21 @@ import { readFileSync } from "fs";
 import { join } from "path";
 
 
+const RAW_ARGS = [ undefined, ...process.argv.slice(2) ];
+
+
 export const INSTRUCTIONS_TEMPLATE = readFileSync(join(import.meta.dirname, "instructions.template.md")).toString();
 
+
+export const parseFlag = arg => !!~RAW_ARGS.indexOf(arg);
+export const parseOption = arg => RAW_ARGS[RAW_ARGS.indexOf(arg) + 1];
+
+
+export function print(message, always = false) {
+    if(!always && !parseFlag("--verbose")) return;
+
+    console.log(`\x1b[2m${message}\x1b[0m`);
+}
 
 export function templateInstructions(templatingDict) {
     let instructions = INSTRUCTIONS_TEMPLATE;

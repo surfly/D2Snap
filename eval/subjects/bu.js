@@ -31,7 +31,7 @@ function loadSnapshotBU(data) {
     return [
         {
             type: "image",
-            data: Buffer.from(data.buGUI.data).toString("base64"),
+            data: data.buGUI.data,
             path: data.buGUI.path,
             size: Buffer.byteLength(data.buGUI.data)
         },

@@ -3,6 +3,7 @@ import { createReadStream } from "fs";
 import { zodTextFormat } from "openai/helpers/zod";
 import { z } from "zod";
 import zodToJsonSchema from "zod-to-json-schema";
+import sharp from "sharp";
 
 import OpenAI from "openai";
 import Anthropic, { toFile } from "@anthropic-ai/sdk";
@@ -19,6 +20,24 @@ class LLMAdapter {
     static #logger = new Logger("llm");
     static #requests = 0;
 
+    static createSchema(specificSchema) {
+        return z.object({
+            interactiveElements: z.array(
+                z.object({
+                    ...InteractiveElementTarget.shape,
+                    ...specificSchema
+                })
+            ),
+        });
+    }
+
+    static resizeImage(data, w, h = undefined) {
+        return sharp(data)
+            .resize(w, h)
+            .png()
+            .toBuffer();
+    }
+
     createRequest(
         instructions,
         inputTask,
@@ -28,13 +47,29 @@ class LLMAdapter {
         throw new SyntaxError("createRequest() not implemented");
     }
 
-    createResponse(req) {
+    createResponse(
+        req,
+        interactiveElementTargetSchema = null
+    ) {
         throw new SyntaxError("createResponse() not implemented");
     }
 
-    async request(...args) {
-        const req = await this.createRequest(...args);
-        const res = await this.createResponse(req);
+    async request(
+        instructions,
+        inputTask,
+        snapshotData,
+        interactiveElementTargetSchema
+    ) {
+        const req = await this.createRequest(
+            instructions,
+            inputTask,
+            snapshotData,
+            interactiveElementTargetSchema
+        );
+        const res = await this.createResponse(
+            req,
+            interactiveElementTargetSchema
+        );
 
         LLMAdapter.#logger
             .write(
@@ -110,14 +145,7 @@ export class OpenAIAdapter extends LLMAdapter {
             ],
             text: {
                 format: zodTextFormat(
-                    z.object({
-                        interactiveElements: z.array(
-                            z.object({
-                                ...InteractiveElementTarget.shape,
-                                ...interactiveElementTargetSchema.shape
-                            })
-                        ),
-                    }),
+                    LLMAdapter.createSchema(interactiveElementTargetSchema.shape),
                     "interactiveElements"
                 )
             },
@@ -145,8 +173,11 @@ export class OpenAIAdapter extends LLMAdapter {
 }
 
 export class AnthropicAdapter extends LLMAdapter {
+    static #imageResizeWidth = 900;
+
     #model;
     #client;
+    #lastInteractiveElementTargetSchema;
 
     constructor(model, key) {
         super();
@@ -172,15 +203,6 @@ export class AnthropicAdapter extends LLMAdapter {
     }
 
     async createRequest(instructions, inputTask, snapshotData, interactiveElementTargetSchema) {
-        const schema = z.object({
-            interactiveElements: z.array(
-                z.object({
-                    ...InteractiveElementTarget.shape,
-                    ...interactiveElementTargetSchema.shape
-                })
-            ),
-        });
-
         return {
             max_tokens: 2**13,
             model: this.#model,
@@ -188,7 +210,7 @@ export class AnthropicAdapter extends LLMAdapter {
                 .concat([
                     `Respond only with a valid JSON which is according to the following schema:\n\n${
                         JSON.stringify(
-                            zodToJsonSchema(schema),
+                            zodToJsonSchema(LLMAdapter.createSchema(interactiveElementTargetSchema.shape)),
                             null,
                             2
                         )
@@ -205,7 +227,11 @@ export class AnthropicAdapter extends LLMAdapter {
                                 .map(async (snapshot) => {
                                     return (snapshot.type === "image")
                                         /* ? { type: "image", source: { type: "file", file_id: await this.#createFile(inputSnapsshot.path) } } */
-                                        ? { type: "image", source: { type: "base64", data: snapshot.data, media_type: "image/png" } }
+                                        ? { type: "image", source: {
+                                            type: "base64",
+                                            data: (await LLMAdapter.resizeImage(snapshot.data, AnthropicAdapter.#imageResizeWidth)).toString("base64"),
+                                            media_type: "image/png"
+                                        } }
                                         : { type: "text", text: snapshot.data };
                                 })
                         )
@@ -215,20 +241,23 @@ export class AnthropicAdapter extends LLMAdapter {
         };
     }
 
-    async createResponse(req) {
+    async createResponse(req, interactiveElementTargetSchema) {
         const res = await this.#client.messages
             .create(req);
 
         if(res.error) throw res.error;
 
-        const resText = res
-            ?.content[0]
-            ?.text
-            .replace(/^``` *json\s*/, "")
-            .replace(/\s*```$/, "");
+        const resText = (
+            res
+                ?.content[0]
+                ?.text
+                .match(/(\{[\s\S]*\}|\[[\s\S]*\])/)
+            ?? []
+        )[0];
         const resObj = JSON.parse(resText);
 
-        schema.parse(resObj);
+        LLMAdapter.createSchema(interactiveElementTargetSchema.shape)
+            .parse(resObj);
 
         return resObj;          
     }

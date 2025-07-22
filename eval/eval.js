@@ -3,13 +3,10 @@ import { join } from "path";
 
 import { JSDOM } from "jsdom";
 
+import { parseOption, print } from "./eval.util.js";
 import { OpenAIAdapter, AnthropicAdapter } from "./LLMAdapter.js";
 import { Logger } from "./Logger.js";
 
-
-const RAW_ARGS = [ undefined, ...process.argv.slice(2) ];
-export const parseFlag = arg => !!~RAW_ARGS.indexOf(arg);
-export const parseOption = arg => RAW_ARGS[RAW_ARGS.indexOf(arg) + 1];
 
 const DATASET = loadDataset();
 const REFERENCE = await loadReference();
@@ -28,7 +25,7 @@ const { API_ADAPTER, PROVIDER, MODEL } = (() => {
 
             break;
         case "anthropic":
-            model = model ?? "claude-sonnet-4-latest";
+            model = model ?? "claude-sonnet-4-20250514";
             adapter = new AnthropicAdapter(
                 model,
                 process.env.ANTHROPIC_API_KEY
@@ -47,14 +44,8 @@ const { API_ADAPTER, PROVIDER, MODEL } = (() => {
 })();
 
 
-function print(message, always = false) {
-    if(!always && !parseFlag("--verbose")) return;
-
-    console.log(`\x1b[2m${message}\x1b[0m`);
-}
-
 function loadDataset() {
-    const raw = readFileSync(join(import.meta.dirname, "../dataset", "data.jsonl")).toString();
+    const raw = readFileSync(join(import.meta.dirname, "..", "dataset", "data.jsonl")).toString();
     return raw
         .split(/\n/g)
         .map(record => record.trim())
@@ -64,7 +55,7 @@ function loadDataset() {
 
 async function loadReference() {
     const reference = (await import(
-        join(import.meta.dirname, "../dataset", "reference.json"), { with: { type: "json" } })
+        join(import.meta.dirname, "..", "dataset", "reference.json"), { with: { type: "json" } })
     ).default;
     return new Map(
         reference
@@ -80,13 +71,21 @@ export async function runEvaluation(
     instructions,
     outputSchema
 ) {
-    print(`Evaluating ${identifier}...`, true);
+    print(`Evaluating '${identifier}'...`, true);
 
     const t0 = Date.now();
     const results = [];
 
     process.on("exit", () => {
-        new Logger("../results", false)
+        const dateID = new Date()
+            .toLocaleString("nl")
+            .split(/[^\d]+/g)
+            .slice(0, -2)
+            .join("-");
+        new Logger(
+            join("..", "results", dateID),
+            false
+        )
             .write(identifier.replace(/(\.json)?$/i, ".json"), JSON.stringify({
                 endpoint: `${PROVIDER}: ${MODEL}`,
                 date: new Date().toISOString(),
@@ -106,14 +105,14 @@ export async function runEvaluation(
         const record = DATASET[i];
  
         const readGUISnapshot = dir => {
-            const path = join(import.meta.dirname, "../dataset", dir, `${record.id}.png`);
+            const path = join(import.meta.dirname, "..", "dataset", dir, `${record.id}.png`);
             return {
                 path,
                 data: readFileSync(path)
             };
         };
         const readDOMSnapshot = () => {
-            const raw = readFileSync(join(import.meta.dirname, "../dataset", "dom", `${record.id}.html`)).toString();
+            const raw = readFileSync(join(import.meta.dirname, "..", "dataset", "dom", `${record.id}.html`)).toString();
 
             const { document } = new JSDOM(raw).window;
         
@@ -124,7 +123,7 @@ export async function runEvaluation(
             originalDOM: readDOMSnapshot(),
             originalGUI: readGUISnapshot("gui"),
             buGUI: readGUISnapshot("bu"),
-            buTxt: readFileSync(join(import.meta.dirname, "../dataset", "bu", `${record.id}.txt`)).toString()
+            buTxt: readFileSync(join(import.meta.dirname, "..", "dataset", "bu", `${record.id}.txt`)).toString()
         };
         const snapshotData = await snapshotLoaderCb(rawSnapshots, record.id);
         if(!snapshotData) {
@@ -138,7 +137,7 @@ export async function runEvaluation(
         }
 
         const snapshotDataPrint = (
-            snapshotData.path
+            snapshotData[0].path
             ?? snapshotData[0].data.replace(/\s+/g, " ")
         );
         print(`(${i}) ${record.url}`, true);
@@ -190,5 +189,5 @@ export async function runEvaluation(
         });
     }
 
-    print(`...done (${Math.round((Date.now() - t0) / 1000)}s).`, true);
+    print(`...'${identifier}' done (${Math.round((Date.now() - t0) / 1000)}s).`, true);
 }

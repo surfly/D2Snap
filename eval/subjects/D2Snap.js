@@ -1,7 +1,7 @@
 import { Worker } from "worker_threads";
 import { join } from "path";
 
-import { parseOption } from "../eval.js";
+import { parseOption } from "../eval.util.js";
 
 
 const EVALS = {

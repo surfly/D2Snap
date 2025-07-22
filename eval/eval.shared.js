@@ -34,7 +34,7 @@ export const INSTRUCTIONS_DOM = templateInstructions({
         "cssSelector": "[data-uid=\"3\"]"
     }
 ]
-\`\`\`        
+\`\`\`
     `
 });
 
