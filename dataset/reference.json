@@ -1,0 +1,1324 @@
+[
+  {
+    "id": "apple-0",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [567, 1], [58, 42] ],
+          "bu_identifier": 1
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [393, 2432], [104, 36] ],
+          "bu_identifier": 22
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [455, 5670], [54, 25] ],
+          "bu_identifier": 76
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"3\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"4\"]" } ]
+    ]
+  },
+  {
+    "id": "apple-1",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [315, 66], [112, 92] ],
+          "bu_identifier": 13
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [220, 4288], [131, 44] ],
+          "bu_identifier": 45
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"2\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"3\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"4\"]" } ]
+    ]
+  },
+  {
+    "id": "apple-2",
+    "trajectories": [
+      [ { "css_selector": "[DATA-AIE=\"0\"]" } ]
+    ]
+  },
+  {
+    "id": "drugs-0",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [913, 32], [185, 33] ],
+          "bu_identifier": 3
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [964, 299], [279, 135] ],
+          "bu_identifier": 22
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"2\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"3\"]" } ]
+    ]
+  },
+  {
+    "id": "drugs-1",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [404, 439], [678, 46] ],
+          "bu_identifier": 44
+        },
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [1082, 439], [70, 46] ],
+          "bu_identifier": 45
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"1\"]" } ]
+    ]
+  },
+  {
+    "id": "drugs-2",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [404, 646], [199, 45] ],
+          "bu_identifier": 50
+        }
+      ]
+    ]
+  },
+  {
+    "id": "foxsports-0",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [166, 153], [111, 34] ],
+          "bu_identifier": 1
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [1426, 66], [116, 53] ],
+          "bu_identifier": 16
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [1475, 190], [62, 38] ],
+          "bu_identifier": 26
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"3\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"4\"]" } ]
+    ]
+  },
+  {
+    "id": "foxsports-1",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [455, 525], [383, 61] ],
+          "bu_identifier": 19
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"1\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"2\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"3\"]" } ]
+    ]
+  },
+  {
+    "id": "foxsports-2",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [455, 592], [392, 77] ],
+          "bu_identifier": 18
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"1\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"2\"]" } ]
+    ]
+  },
+  {
+    "id": "foxsports-3",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [459, 292], [392, 77] ],
+          "bu_identifier": 14
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"1\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"2\"]" } ]
+    ]
+  },
+  {
+    "id": "foxsports-4",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [461, 142], [376, 77] ],
+          "bu_identifier": 12
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"1\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"2\"]" } ]
+    ]
+  },
+  {
+    "id": "foxsports-5",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [1061, 81], [94, 61] ],
+          "bu_identifier": 15
+        }
+      ]
+    ]
+  },
+  {
+    "id": "govuk-0",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [480, 2473], [609, 108] ],
+          "bu_identifier": 22
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [810, 4222], [179, 18] ],
+          "bu_identifier": 60
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [480, 376], [581, 50] ],
+          "bu_identifier": 4
+        },
+        {
+          "css_selector": "[DATA-AIE=\"3\"]",
+          "bounding_box": [ [1060, 376], [50, 50] ],
+          "bu_identifier": 5
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"4\"]" } ],
+      [
+        { "css_selector": "[DATA-AIE=\"5\"]" },
+        { "css_selector": "[DATA-AIE=\"6\"]" }
+      ]
+    ]
+  },
+  {
+    "id": "govuk-1",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [480, 1181], [229, 18] ],
+          "bu_identifier": 23
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [480, 1600], [216, 18] ],
+          "bu_identifier": 27
+        }
+      ]
+    ]
+  },
+  {
+    "id": "govuk-2",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [480, 366], [158, 45] ],
+          "bu_identifier": 6
+        }
+      ]
+    ]
+  },
+  {
+    "id": "govuk-3",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [480, 276], [416, 40] ],
+          "bu_identifier": 4
+        },
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [480, 346], [99, 40] ],
+          "bu_identifier": 5
+        }
+      ]
+    ]
+  },
+  {
+    "id": "govuk-4",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [482, 312], [40, 40] ]
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [480, 782], [99, 40] ],
+          "bu_identifier": 12
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [539, 312], [263, 40] ],
+          "bu_identifier": 4
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [480, 782], [99, 40] ],
+          "bu_identifier": 12
+        }
+      ]
+    ]
+  },
+  {
+    "id": "govuk-5",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [482, 352], [40, 40] ]
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [480, 424], [99, 40] ],
+          "bu_identifier": 5
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [539, 352], [173, 40] ],
+          "bu_identifier": 4
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [540, 782], [99, 40] ],
+          "bu_identifier": 5
+        }
+      ]
+    ]
+  },
+  {
+    "id": "govuk-6",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [482, 298], [40, 40] ]
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [480, 540], [99, 40] ],
+          "bu_identifier": 11
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [539, 352], [234, 40] ],
+          "bu_identifier": 3
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [540, 748], [99, 40] ],
+          "bu_identifier": 11
+        }
+      ]
+    ]
+  },
+  {
+    "id": "landwatch-0",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [198, 15], [125, 30] ]
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [342, 15], [144, 30] ]
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [477, 201], [826, 36] ]
+        },
+        {
+          "css_selector": "[DATA-AIE=\"3\"]",
+          "bounding_box": [ [1305, 201], [138, 36] ],
+          "bu_identifier": 3
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"4\"]",
+          "bounding_box": [ [864, 286], [192, 38] ],
+          "bu_identifier": 4
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"5\"]",
+          "bounding_box": [ [965, 842], [349, 330] ],
+          "bu_identifier": 58
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"6\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"7\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"8\"]" } ]
+    ]
+  },
+  {
+    "id": "landwatch-1",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [336, 2073], [289, 18] ],
+          "bu_identifier": 47
+        },
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [336, 3532], [289, 18] ],
+          "bu_identifier": 87
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [336, 3822], [288, 35] ],
+          "bu_identifier": 94
+        }
+      ]
+    ]
+  },
+  {
+    "id": "macys-0",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [1328, 13], [100, 16] ],
+          "bu_identifier": 0
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [230, 1854], [100, 36] ],
+          "bu_identifier": 20
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"2\"]" } ]
+    ]
+  },
+  {
+    "id": "macys-1",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [540, 333], [437, 45] ],
+          "bu_identifier": 52
+        },
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [540, 413], [437, 45] ],
+          "bu_identifier": 54
+        },
+        {
+          "css_selector": "[DATA-AIE=\"4\"]",
+          "bounding_box": [ [673, 493], [154, 40] ],
+          "bu_identifier": 56
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [548, 350], [108, 12] ],
+          "bu_identifier": 53
+        },
+        {
+          "css_selector": "[DATA-AIE=\"3\"]",
+          "bounding_box": [ [548, 430], [108, 12] ],
+          "bu_identifier": 55
+        },
+        {
+          "css_selector": "[DATA-AIE=\"4\"]",
+          "bounding_box": [ [673, 493], [154, 40] ],
+          "bu_identifier": 56
+        }
+      ]
+    ]
+  },
+  {
+    "id": "mega-0",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [695, 1], [124, 65] ],
+          "bu_identifier": 2
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [821, 1], [109, 65] ],
+          "bu_identifier": 3
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [1112, 4221], [165, 42] ],
+          "bu_identifier": 16
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"3\"]",
+          "bounding_box": [ [754, 9413], [79, 33] ],
+          "bu_identifier": 38
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"4\"]",
+          "bounding_box": [ [964, 9344], [69, 33] ],
+          "bu_identifier": 47
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"5\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"6\"]" } ]
+    ]
+  },
+  {
+    "id": "mega-1",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [767, 276], [125, 66] ],
+          "bu_identifier": 12
+        }
+      ],
+      [
+        { "css_selector": "[DATA-AIE=\"1\"]" },
+        { "css_selector": "[DATA-AIE=\"2\"]" },
+        { "css_selector": "[DATA-AIE=\"3\"]" }
+      ],
+      [
+        { "css_selector": "[DATA-AIE=\"4\"]" },
+        { "css_selector": "[DATA-AIE=\"5\"]" },
+        { "css_selector": "[DATA-AIE=\"6\"]" }
+      ]
+    ]
+  },
+  {
+    "id": "mega-2",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [805, 502], [149, 52] ],
+          "bu_identifier": 14
+        },
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [805, 676], [149, 52] ],
+          "bu_identifier": 16
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [676, 850], [149, 52] ],
+          "bu_identifier": 18
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"3\"]",
+          "bounding_box": [ [988, 514], [553, 28] ],
+          "bu_identifier": 15
+        },
+        {
+          "css_selector": "[DATA-AIE=\"4\"]",
+          "bounding_box": [ [988, 688], [553, 28] ],
+          "bu_identifier": 17
+        },
+        {
+          "css_selector": "[DATA-AIE=\"5\"]",
+          "bounding_box": [ [988, 862], [553, 28] ],
+          "bu_identifier": 19
+        }
+      ]
+    ]
+  },
+  {
+    "id": "nba-0",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [917, 1], [48, 53] ],
+          "bu_identifier": 8
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"1\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"2\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"2\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"3\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"5\"]" } ]
+    ]
+  },
+  {
+    "id": "nba-1",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [795, 392], [451, 33] ],
+          "bu_identifier": 34
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [795, 2070], [451, 33] ],
+          "bu_identifier": 136
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [3112, 1122], [98, 11] ],
+          "bu_identifier": 206
+        }
+      ]
+    ]
+  },
+  {
+    "id": "pypi-0",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [655, 346], [560, 50] ],
+          "bu_identifier": 8
+        },
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [1215, 346], [50, 50] ],
+          "bu_identifier": 9
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [908, 431], [127, 18] ],
+          "bu_identifier": 10
+        }
+      ]
+    ]
+  },
+  {
+    "id": "pypi-1",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [407, 329], [191, 42] ],
+          "bu_identifier": 13
+        },
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [407, 373], [102, 42] ],
+          "bu_identifier": 14
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [407, 416], [214, 42] ],
+          "bu_identifier": 15
+        },
+        {
+          "css_selector": "[DATA-AIE=\"3\"]",
+          "bounding_box": [ [407, 502], [142, 42] ],
+          "bu_identifier": 17
+        },
+        {
+          "css_selector": "[DATA-AIE=\"4\"]",
+          "bounding_box": [ [407, 547], [181, 42] ],
+          "bu_identifier": 18
+        }
+      ],
+      [
+        { "css_selector": "[DATA-AIE=\"5\"]" },
+        { "css_selector": "[DATA-AIE=\"6\"]" },
+        { "css_selector": "[DATA-AIE=\"7\"]" },
+        { "css_selector": "[DATA-AIE=\"8\"]" },
+        { "css_selector": "[DATA-AIE=\"9\"]" }
+      ],
+      [
+        { "css_selector": "[DATA-AIE=\"10\"]" },
+        { "css_selector": "[DATA-AIE=\"11\"]" },
+        { "css_selector": "[DATA-AIE=\"12\"]" },
+        { "css_selector": "[DATA-AIE=\"13\"]" },
+        { "css_selector": "[DATA-AIE=\"14\"]" }
+      ]
+    ]
+  },
+  {
+    "id": "pypi-2",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [445, 467], [13, 13] ],
+          "bu_identifier": 24
+        },
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [467, 2182], [13, 13] ],
+          "bu_identifier": 124
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [467, 4311], [13, 13] ],
+          "bu_identifier": 297
+        },
+        {
+          "css_selector": "[DATA-AIE=\"3\"]",
+          "bounding_box": [ [445, 6077], [13, 13] ],
+          "bu_identifier": 443
+        },
+        {
+          "css_selector": "[DATA-AIE=\"4\"]",
+          "bounding_box": [ [445, 6459], [13, 13] ],
+          "bu_identifier": 474
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"5\"]",
+          "bounding_box": [ [461, 467], [113, 13] ],
+          "bu_identifier": 23
+        },
+        {
+          "css_selector": "[DATA-AIE=\"6\"]",
+          "bounding_box": [ [484, 467], [61, 13] ],
+          "bu_identifier": 123
+        },
+        {
+          "css_selector": "[DATA-AIE=\"7\"]",
+          "bounding_box": [ [483, 467], [16, 13] ],
+          "bu_identifier": 298
+        },
+        {
+          "css_selector": "[DATA-AIE=\"8\"]",
+          "bounding_box": [ [461, 6078], [96, 13] ],
+          "bu_identifier": 444
+        },
+        {
+          "css_selector": "[DATA-AIE=\"9\"]",
+          "bounding_box": [ [461, 6459], [59, 13] ],
+          "bu_identifier": 475
+        }
+      ]
+    ]
+  },
+  {
+    "id": "redfin-0",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [1308, 15], [64, 32] ],
+          "bu_identifier": 0
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [556, 278], [64, 40] ]
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [330, 318], [550, 72] ],
+          "bu_identifier": 6
+        },
+        {
+          "css_selector": "[DATA-AIE=\"3\"]",
+          "bounding_box": [ [820, 330], [48, 48] ],
+          "bu_identifier": 7
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"4\"]",
+          "bounding_box": [ [1348, 1599], [182, 48] ],
+          "bu_identifier": 25
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"5\"]",
+          "bounding_box": [ [580, 4318], [90, 12] ],
+          "bu_identifier": 120
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"6\"]",
+          "bounding_box": [ [340, 4550], [94, 12] ],
+          "bu_identifier": 151
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"7\"]",
+          "bu_identifier": 24
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"8\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"9\"]" } ]
+    ]
+  },
+  {
+    "id": "redfin-1",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [462, 198], [48, 48] ]
+        },
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [370, 307], [67, 48] ]
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [568, 388], [107, 48] ],
+          "bu_identifier": 8
+        },
+        {
+          "css_selector": "[DATA-AIE=\"3\"]",
+          "bounding_box": [ [897, 143], [124, 17] ],
+          "bu_identifier": 12
+        }
+      ]
+    ]
+  },
+  {
+    "id": "rottentomatoes-0",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [1134, 151], [95, 30] ],
+          "bu_identifier": 5
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [1115, 253], [60, 9] ],
+          "bu_identifier": 208
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"2\"]" } ]
+    ]
+  },
+  {
+    "id": "rottentomatoes-1",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [426, 307], [81, 34] ]
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"1\"]" } ]
+    ]
+  },
+  {
+    "id": "target-0",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [275, 6541], [60, 25] ],
+          "bu_identifier": 112
+        }
+      ]
+    ]
+  },
+  {
+    "id": "target-1",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [420, 560], [386, 42] ],
+          "bu_identifier": 8
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [815, 560], [386, 42] ],
+          "bu_identifier": 10
+        },
+        {
+          "css_selector": "[DATA-AIE=\"3\"]",
+          "bounding_box": [ [1212, 560], [146, 42] ],
+          "bu_identifier": 11
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [750, 562], [38, 38] ],
+          "bu_identifier": 9
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [815, 560], [386, 42] ],
+          "bu_identifier": 10
+        },
+        {
+          "css_selector": "[DATA-AIE=\"3\"]",
+          "bounding_box": [ [1212, 560], [146, 42] ],
+          "bu_identifier": 11
+        }
+      ],
+      [
+        { "css_selector": "[DATA-AIE=\"4\"]" },
+        { "css_selector": "[DATA-AIE=\"5\"]" },
+        {
+          "css_selector": "[DATA-AIE=\"3\"]",
+          "bounding_box": [ [1212, 560], [146, 42] ],
+          "bu_identifier": 11
+        }
+      ],
+      [
+        { "css_selector": "[DATA-AIE=\"6\"]" },
+        { "css_selector": "[DATA-AIE=\"7\"]" },
+        { "css_selector": "[DATA-AIE=\"8\"]" },
+        { "css_selector": "[DATA-AIE=\"9\"]" }
+      ]
+    ]
+  },
+  {
+    "id": "thumbtack-0",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [523, 490], [670, 54] ],
+          "bu_identifier": 5
+        },
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [1194, 490], [112, 54] ],
+          "bu_identifier": 6
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [1307, 490], [91, 54] ],
+          "bu_identifier": 7
+        }
+      ],
+      [
+        { "css_selector": "[DATA-AIE=\"3\"]" },
+        { "css_selector": "[DATA-AIE=\"4\"]" },
+        { "css_selector": "[DATA-AIE=\"5\"]" }
+      ],
+      [
+        { "css_selector": "[DATA-AIE=\"6\"]" },
+        { "css_selector": "[DATA-AIE=\"7\"]" },
+        { "css_selector": "[DATA-AIE=\"8\"]" }
+      ]
+    ]
+  },
+  {
+    "id": "thumbtack-1",
+    "trajectories": [
+      [
+        { "bounding_box": [ [32, 667], [15, 15] ] },
+        { "bounding_box": [ [32, 858], [15, 15] ] },
+        { "bounding_box": [ [32, 1017], [15, 15] ] }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [56, 667], [30, 15] ],
+          "bu_identifier": 15
+        },
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [56, 858], [33, 15] ],
+          "bu_identifier": 20
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [55, 1017], [94, 15] ],
+          "bu_identifier": 24
+        }
+      ]
+    ]
+  },
+  {
+    "id": "uniqlo-0",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [1328, 13], [100, 16] ],
+          "bu_identifier": 0
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"2\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"3\"]" } ],
+      [
+        { "css_selector": "[DATA-AIE=\"4\"]" },
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [230, 1854], [100, 36] ],
+          "bu_identifier": 20
+        }
+      ],
+      [
+        { "css_selector": "[DATA-AIE=\"6\"]" },
+        { "css_selector": "[DATA-AIE=\"7\"]" }
+      ]
+    ]
+  },
+  {
+    "id": "uniqlo-1",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [473, 80], [974, 46] ],
+          "bu_identifier": 24
+        },
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [487, 85], [36, 36] ],
+          "bu_identifier": 23
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [1194, 127], [250, 94] ],
+          "bu_identifier": 28
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"3\"]" } ],
+      [
+        { "css_selector": "[DATA-AIE=\"4\"]" },
+        { "css_selector": "[DATA-AIE=\"5\"]" }
+      ]
+    ]
+  },
+  {
+    "id": "uniqlo-2",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [473, 80], [974, 46] ],
+          "bu_identifier": 24
+        },
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [487, 85], [36, 36] ],
+          "bu_identifier": 23
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [46, 273], [228, 70] ],
+          "bu_identifier": 30
+        }
+      ],
+      [
+        { "css_selector": "[DATA-AIE=\"3\"]" },
+        { "css_selector": "[DATA-AIE=\"4\"]" }
+      ]
+    ]
+  },
+  {
+    "id": "uniqlo-3",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [630, 215], [74, 32] ]
+        },
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [712, 215], [91, 32] ]
+        }
+      ]
+    ]
+  },
+
+
+  {
+    "id": "ups-0",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [267, 17], [246, 21] ]
+        }
+      ]
+    ]
+  },
+  {
+    "id": "ups-1",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [60, 154], [385, 58] ],
+          "bu_identifier": 65
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [455, 161], [115, 43] ],
+          "bu_identifier": 67
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [70, 170], [106, 22] ],
+          "bu_identifier": 65
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [455, 161], [115, 43] ],
+          "bu_identifier": 67
+        }
+      ]
+    ]
+  },
+  {
+    "id": "ups-2",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [112, 933], [396, 18] ],
+          "bu_identifier": 77
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [122, 1047], [44, 33] ],
+          "bu_identifier": 79
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"2\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"3\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"4\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"5\"]" } ]
+    ]
+  },
+  {
+    "id": "usps-0",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [663, 37], [135, 42] ],
+          "bu_identifier": 12
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [780, 4332], [91, 13] ],
+          "bu_identifier": 47
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"3\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"4\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"5\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"6\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"7\"]" } ]
+    ]
+  },
+  {
+    "id": "usps-1",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [846, 571], [228, 24] ],
+          "bu_identifier": 33
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"1\"]" } ],
+      [ { "css_selector": "[DATA-AIE=\"2\"]" } ]
+    ]
+  },
+  {
+    "id": "usps-2",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [390, 213], [350, 34] ],
+          "bu_identifier": 10
+        },
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [770, 213], [350, 34] ],
+          "bu_identifier": 12
+        },
+        {
+          "css_selector": "[DATA-AIE=\"4\"]",
+          "bounding_box": [ [770, 636], [120, 120] ],
+          "bu_identifier": 37
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [390, 129], [248, 14] ],
+          "bu_identifier": 0
+        },
+        {
+          "css_selector": "[DATA-AIE=\"3\"]",
+          "bounding_box": [ [770, 129], [230, 14] ],
+          "bu_identifier": 11
+        },
+        {
+          "css_selector": "[DATA-AIE=\"5\"]",
+          "bounding_box": [ [770, 636], [120, 120] ],
+          "bu_identifier": 38
+        }
+      ]
+    ]
+  },
+  {
+    "id": "walmart-0",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [723, 665], [360, 64] ],
+          "bu_identifier": 10
+        },
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [1084, 665], [238, 64] ],
+          "bu_identifier": 11
+        },
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [1344, 663], [60, 60] ],
+          "bu_identifier": 12
+        }
+      ]
+    ]
+  },
+  {
+    "id": "webmd-0",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [1542, 14], [46, 46] ],
+          "bu_identifier": 8
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [368, 1463], [277, 67] ],
+          "bu_identifier": 20
+        }
+      ],
+      [
+        {
+          "css_selector": "[DATA-AIE=\"2\"]",
+          "bounding_box": [ [587, 5186], [250, 250] ],
+          "bu_identifier": 79
+        }
+      ],
+      [        {
+          "css_selector": "[DATA-AIE=\"3\"]",
+          "bounding_box": [ [740, 5560], [165, 42] ],
+          "bu_identifier": 85
+        }
+      ],
+      [ { "css_selector": "[DATA-AIE=\"4\"]" } ]
+    ]
+  },{
+    "id": "webmd-1",
+    "trajectories": [
+      [
+        {
+          "css_selector": "[DATA-AIE=\"0\"]",
+          "bounding_box": [ [485, 926], [85, 30] ]
+        },
+        {
+          "css_selector": "[DATA-AIE=\"1\"]",
+          "bounding_box": [ [1172, 1010], [375, 34] ],
+          "bu_identifier": 15
+        }
+      ]
+    ]
+  }
+]
