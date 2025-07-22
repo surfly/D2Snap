@@ -149,7 +149,6 @@
             "wrap": 0.2,
             "hidden": 0.1,
             "style": 0.1,
-            "data-*": 0.1,
             "content": 0.1,
             "http-equiv": 0.1,
 
