@@ -1,5 +1,7 @@
 {
   "private": true,
+  "name": "@surfly/d2snap",
+  "version": "1.0.0",
   "author": "Thassilo M. Schiepanski",
   "type": "module",
   "scripts": {

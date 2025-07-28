@@ -10,16 +10,16 @@ document
         console.log(document.body.innerHTML);
 
         presentSnapshot(
-            await D2Snap.d2Snap(2, 5, 0.375, {
+            await D2Snap.d2Snap(0.7, 0.7, 0.7, {
                 debug: true
             }),
-            { k: 2, l: 5, m: 0.375 }
+            { k: 0.7, l: 0.7, m: 0.7 }
         );
         presentSnapshot(
-            await D2Snap.d2Snap(4, 2, 0.6, {
+            await D2Snap.d2Snap(0.2, 0.4, 0.6, {
                 debug: true
             }),
-            { k: 4, l: 2, m: 0.6 }
+            { k: 0.2, l: 0.4, m: 0.6 }
         );
         presentSnapshot(
             await D2Snap.adaptiveD2Snap(undefined, undefined, {
