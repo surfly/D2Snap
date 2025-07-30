@@ -46,12 +46,12 @@ data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAACWCAMAAACsAjcrAAAACXBIWXMAAD
 \`\`\` json
 [
     {
-        "elementDescription": "Field that contains the search query.",
+        "elementDescription": "Field that contains the mathematical expression to be solved.",
         "x": 100,
         "y": 47
     },
     {
-        "elementDescription": "Button that submits the search query.",
+        "elementDescription": "Button that triggers the calculation of the provided mathematical expression.",
         "x": 100,
         "y": 197
     }

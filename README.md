@@ -15,7 +15,7 @@ D2Snap.d2Snap(
   options?: Options
 ): Promise<string>
 
-D2Snap.d2Snap(
+D2Snap.adaptiveD2Snap(
   dom: DOM,
   maxTokens: number = 4096,
   maxIterations: number = 5,
@@ -44,7 +44,7 @@ npm install surfly/D2Snap
 ```
 
 ``` js
-import { d2Snap, adaptiveD2Snap } from "@surfly/d2snap";
+import D2Snap from "@surfly/d2snap";
 ```
 
 ##

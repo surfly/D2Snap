@@ -11,8 +11,9 @@ const EVALS = {
     "D2Snap.9-3-6": { k: 0.9, l: 0.3, m: 0.6 },
     "D2Snap.6-9-3": { k: 0.6, l: 0.9, m: 0.3 },
     "D2Snap.3-6-9": { k: 0.3, l: 0.6, m: 0.9 },
+    "D2Snap.ada.4096": { maxTokens: 4096 },
     "D2Snap.ada.8192": { maxTokens: 8192 },
-    "D2Snap.ada.4096": { maxTokens: 4096 }
+    "D2Snap.ada.32768": { maxTokens: 32768 }
 };
 
 

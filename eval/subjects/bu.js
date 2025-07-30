@@ -13,14 +13,14 @@ const baseInstructionsBU = {
     EXAMPLE_RESPONSE: `
 \`\`\` json
 [
-{
-    "elementDescription": "Field that contains the mathematical expression to be solved.",
-    "identifier": 0
-},
-{
-    "elementDescription": "Button that triggers the calculation of the provided mathematical expression.",
-    "identifier": 1
-}
+    {
+        "elementDescription": "Field that contains the mathematical expression to be solved.",
+        "identifier": 0
+    },
+    {
+        "elementDescription": "Button that triggers the calculation of the provided mathematical expression.",
+        "identifier": 1
+    }
 ]
 \`\`\`        
     `
