@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "author": "Thassilo M. Schiepanski",
   "type": "module",
+  "main": "./dist/D2Snap.lib.js",
   "scripts": {
     "build:lib": "npx esbuild ./src/D2Snap.lib.ts --bundle --outfile=./dist/D2Snap.lib.js --platform=node --packages=external --format=esm --target=es2022",
     "build:lib:watch": "npm run build:lib -- --watch",
@@ -27,7 +28,6 @@
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.55.0",
     "esbuild": "^0.25.4",
-    "jsdom": "^24.0.0",
     "openai": "^5.6.0",
     "playwright": "^1.54.1",
     "sharp": "^0.34.3",
@@ -35,6 +35,7 @@
     "zod-to-json-schema": "^3.24.6"
   },
   "dependencies": {
+    "jsdom": "^24.0.0",
     "turndown": "^7.2.0",
     "turndown-plugin-gfm": "^1.0.2"
   }
