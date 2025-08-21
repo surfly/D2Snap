@@ -1,27 +1,33 @@
 import { d2Snap as _d2Snap, adaptiveD2Snap  as _adaptiveD2Snap} from "./D2Snap";
 import { DOM } from "./types";
 
-import { JSDOM } from "jsdom";
 
-
-function dynamicizeDOM(domOrSerialisedDOM: DOM|string): DOM {
+async function dynamicizeDOM(domOrSerialisedDOM: DOM|string): DOM {
     if(typeof(domOrSerialisedDOM) !== "string") return domOrSerialisedDOM;
 
-    const dynamicDOM = new JSDOM(domOrSerialisedDOM);
+    try {
+        const jsdom = await import("jsdom");
 
-    return dynamicDOM.window.document;
+        const dynamicDOM = new jsdom.JSDOM(domOrSerialisedDOM);
+
+        return dynamicDOM.window.document;
+    } catch(err) {
+        console.error(err);
+
+        throw new ReferenceError("Install 'jsdom' to use D2Snap with Node.js");
+    }
 }
 
-export function d2Snap(
+export async function d2Snap(
     domOrSerialisedDOM: DOM|string,
     ...args: Parameters<typeof _d2Snap> extends [ unknown, ...infer T ] ? T : never
 ) {
-    return _d2Snap(dynamicizeDOM(domOrSerialisedDOM), ...args);
+    return _d2Snap(await dynamicizeDOM(domOrSerialisedDOM), ...args);
 }
 
-export function adaptiveD2Snap(
+export async function adaptiveD2Snap(
     domOrSerialisedDOM: DOM|string,
     ...args: Parameters<typeof _adaptiveD2Snap> extends [ unknown, ...infer T ] ? T : never
 ) {
-    return _adaptiveD2Snap(dynamicizeDOM(domOrSerialisedDOM), ...args);
+    return _adaptiveD2Snap(await dynamicizeDOM(domOrSerialisedDOM), ...args);
 }

@@ -1,6 +1,6 @@
 // src/util.ts
 function findDownsamplingRoot(dom) {
-  return dom.body ?? dom.documentElement;
+  return dom.body ?? dom.documentElement ?? dom;
 }
 function resolveDocument(dom) {
   let doc;
@@ -418,7 +418,7 @@ async function d2Snap(dom, k = 0.4, l = 0.5, m = 0.6, options = {}) {
       elementNode.removeAttribute(attr.name);
     }
   }
-  const originalSize = dom.documentElement.outerHTML.length;
+  const originalSize = (dom?.outerHTML ?? dom?.documentElement.outerHTML).length;
   const partialDom = findDownsamplingRoot(dom);
   let n = 0;
   optionsWithDefaults.assignUniqueIDs && await traverseDom(
@@ -557,17 +557,22 @@ async function adaptiveD2Snap(dom, maxTokens = 4096, maxIterations = 5, options 
 }
 
 // src/D2Snap.lib.ts
-import { JSDOM } from "jsdom";
-function dynamicizeDOM(domOrSerialisedDOM) {
+async function dynamicizeDOM(domOrSerialisedDOM) {
   if (typeof domOrSerialisedDOM !== "string") return domOrSerialisedDOM;
-  const dynamicDOM = new JSDOM(domOrSerialisedDOM);
-  return dynamicDOM.window.document;
+  try {
+    const jsdom = await import("jsdom");
+    const dynamicDOM = new jsdom.JSDOM(domOrSerialisedDOM);
+    return dynamicDOM.window.document;
+  } catch (err) {
+    console.error(err);
+    throw new ReferenceError("Install 'jsdom' to use D2Snap with Node.js");
+  }
 }
-function d2Snap2(domOrSerialisedDOM, ...args) {
-  return d2Snap(dynamicizeDOM(domOrSerialisedDOM), ...args);
+async function d2Snap2(domOrSerialisedDOM, ...args) {
+  return d2Snap(await dynamicizeDOM(domOrSerialisedDOM), ...args);
 }
-function adaptiveD2Snap2(domOrSerialisedDOM, ...args) {
-  return adaptiveD2Snap(dynamicizeDOM(domOrSerialisedDOM), ...args);
+async function adaptiveD2Snap2(domOrSerialisedDOM, ...args) {
+  return adaptiveD2Snap(await dynamicizeDOM(domOrSerialisedDOM), ...args);
 }
 export {
   adaptiveD2Snap2 as adaptiveD2Snap,

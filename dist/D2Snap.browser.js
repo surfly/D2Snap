@@ -1,7 +1,7 @@
 (() => {
   // src/util.ts
   function findDownsamplingRoot(dom) {
-    return dom.body ?? dom.documentElement;
+    return dom.body ?? dom.documentElement ?? dom;
   }
   function resolveDocument(dom) {
     let doc;
@@ -1262,7 +1262,7 @@
         elementNode.removeAttribute(attr.name);
       }
     }
-    const originalSize = dom.documentElement.outerHTML.length;
+    const originalSize = (dom?.outerHTML ?? dom?.documentElement.outerHTML).length;
     const partialDom = findDownsamplingRoot(dom);
     let n = 0;
     optionsWithDefaults.assignUniqueIDs && await traverseDom(

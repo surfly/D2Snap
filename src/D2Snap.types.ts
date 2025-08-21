@@ -27,7 +27,7 @@ export type D2SnapOptions = {
     assignUniqueIDs?: boolean;
 };
 
-export type DOM = Document;
+export type DOM = Document | HTMLElement;
 
 export type Snapshot = {
     serializedHtml: string;

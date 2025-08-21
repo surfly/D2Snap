@@ -43,6 +43,11 @@ type Options = {
 npm install surfly/D2Snap
 ```
 
+> Install [jsdom](https://github.com/jsdom/jsdom) to use the library with Node.js:
+> ``` console
+> npm install jsdom
+> ```
+
 ``` js
 import D2Snap from "@surfly/d2snap";
 ```
@@ -55,6 +60,7 @@ import D2Snap from "@surfly/d2snap";
 
 ``` console
 npm install
+npm install jsdom
 ```
 
 #### Build

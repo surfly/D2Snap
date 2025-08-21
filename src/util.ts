@@ -2,7 +2,7 @@ import { DOM } from "./D2Snap.types";
 
 
 export function findDownsamplingRoot(dom: DOM): HTMLElement {
-    return dom.body ?? dom.documentElement;
+    return dom.body ?? dom.documentElement ?? dom;
 }
 
 export function resolveDocument(dom: Document | HTMLElement): Document | null {

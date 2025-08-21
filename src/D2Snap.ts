@@ -181,7 +181,10 @@ export async function d2Snap(
         }
     }
 
-    const originalSize = dom.documentElement.outerHTML.length;
+    const originalSize = (
+        (dom as HTMLElement)?.outerHTML
+        ?? (dom as Document)?.documentElement.outerHTML
+    ).length;
     const partialDom: HTMLElement = findDownsamplingRoot(dom);
 
     let n = 0;
