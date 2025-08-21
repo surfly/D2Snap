@@ -5,13 +5,32 @@ export function findDownsamplingRoot(dom: DOM): HTMLElement {
     return dom.body ?? dom.documentElement;
 }
 
+export function resolveDocument(dom: Document | HTMLElement): Document | null {
+    let doc: Node | Document | null;
+    try {
+        let doc: Node | Document | null = (window ?? {}).document;
+        if(doc) return doc as Document;
+    } catch { /**/ }
+
+    doc = dom;
+    while(doc) {
+        if(!!doc["createTreeWalker"]) return doc as Document;
+
+        doc = doc?.parentNode;
+    }
+
+    return null;
+}
+
 export async function traverseDom<T>(
-    dom: DOM,
+    doc: Document,
     root: HTMLElement,
     filter: number = NodeFilter.SHOW_ALL,
     cb: (node: T) => void
 ) {
-    const walker = dom.createTreeWalker(root, filter);
+    doc = resolveDocument(doc);
+
+    const walker = doc.createTreeWalker(root, filter);
 
     const nodes: T[] = [];
     let node = walker.firstChild() as T;

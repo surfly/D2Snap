@@ -4,7 +4,7 @@
 
 
 import { TextNode, HTMLElementDepth, DOM, D2SnapOptions, Snapshot, NodeFilter, Node } from "./D2Snap.types.ts";
-import { formatHtml, findDownsamplingRoot, traverseDom } from "./util.ts";
+import { formatHtml, findDownsamplingRoot, traverseDom, resolveDocument } from "./util.ts";
 import { relativeTextRank } from "./TextRank.ts";
 import { KEEP_LINE_BREAK_MARK, turndown } from "./Turndown.ts";
 
@@ -148,7 +148,7 @@ export async function d2Snap(
 
         // markdown
         const markdown = turndown(elementNode.outerHTML);
-        const markdownNodesFragment = dom
+        const markdownNodesFragment = resolveDocument(dom)
             .createRange()
             .createContextualFragment(markdown);
 

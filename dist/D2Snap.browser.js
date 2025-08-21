@@ -3,8 +3,23 @@
   function findDownsamplingRoot(dom) {
     return dom.body ?? dom.documentElement;
   }
-  async function traverseDom(dom, root2, filter = NodeFilter.SHOW_ALL, cb) {
-    const walker = dom.createTreeWalker(root2, filter);
+  function resolveDocument(dom) {
+    let doc;
+    try {
+      let doc2 = (window ?? {}).document;
+      if (doc2) return doc2;
+    } catch {
+    }
+    doc = dom;
+    while (doc) {
+      if (!!doc["createTreeWalker"]) return doc;
+      doc = doc?.parentNode;
+    }
+    return null;
+  }
+  async function traverseDom(doc, root2, filter = NodeFilter.SHOW_ALL, cb) {
+    doc = resolveDocument(doc);
+    const walker = doc.createTreeWalker(root2, filter);
     const nodes = [];
     let node = walker.firstChild();
     while (node) {
@@ -1228,7 +1243,7 @@
       if (elementNode.nodeType !== 1 /* ELEMENT_NODE */) return;
       if (!isElementType("content", elementNode)) return;
       const markdown = turndown(elementNode.outerHTML);
-      const markdownNodesFragment = dom.createRange().createContextualFragment(markdown);
+      const markdownNodesFragment = resolveDocument(dom).createRange().createContextualFragment(markdown);
       elementNode.replaceWith(...markdownNodesFragment.childNodes);
     }
     function snapElementInteractiveNode(elementNode) {
