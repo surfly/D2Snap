@@ -26,7 +26,7 @@ D2Snap.adaptiveD2Snap(
 ``` ts
 type DOM = Document | Element | string;
 type Options = {
-  assignUniqueIDs?: boolean; // false
+  assignUniqueIDs?: boolean; // false (this option is not available with string input)
   debug?: boolean;           // true
 };
 ```

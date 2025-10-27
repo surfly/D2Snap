@@ -62,7 +62,8 @@ process.on("exit", code => {
 [
     "test.Turndown",
     "test.TextRank",
-    "test.D2Snap"
+    "test.D2Snap.dom",
+    "test.D2Snap.string"
 ]
     .forEach(async reference => {
         await import(join(import.meta.dirname, reference.replace(/(\.js)?$/i, ".js")));

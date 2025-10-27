@@ -1,10 +1,3 @@
-import { DOM } from "./D2Snap.types";
-
-
-export function findDownsamplingRoot(dom: DOM): HTMLElement {
-    return dom.body ?? dom.documentElement ?? dom;
-}
-
 export function resolveDocument(dom: Document | HTMLElement): Document | null {
     let doc: Node | Document | null;
     try {
@@ -20,6 +13,12 @@ export function resolveDocument(dom: Document | HTMLElement): Document | null {
     }
 
     return null;
+}
+
+export function resolveRoot(dom: Document | HTMLElement): HTMLElement {
+    return dom["outerHTML"]
+        ? (dom as HTMLElement)
+        : (dom as Document)?.documentElement;
 }
 
 export async function traverseDom<T>(
