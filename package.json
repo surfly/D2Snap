@@ -6,9 +6,9 @@
   "type": "module",
   "main": "./dist/D2Snap.lib.js",
   "scripts": {
-    "build:lib": "npx esbuild ./src/D2Snap.lib.ts --bundle --outfile=./dist/D2Snap.lib.js --platform=node --packages=external --format=esm --target=es2022",
+    "build:lib": "npx esbuild ./src/api.ts --bundle --outfile=./dist/api.js --platform=node --packages=external --format=esm --target=es2022",
     "build:lib:watch": "npm run build:lib -- --watch",
-    "build:browser": "npx esbuild ./src/D2Snap.browser.ts --bundle --outfile=./dist/D2Snap.browser.js",
+    "build:browser": "npx esbuild ./src/api.browser.ts --bundle --outfile=./dist/api.browser.js",
     "build:browser:watch": "npm run build:browser -- --watch",
     "build": "npm run build:lib && npm run build:browser",
     "test": "node --experimental-strip-types ./test/test.js",

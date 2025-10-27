@@ -102,7 +102,7 @@ export function textRank(textOrSentences: string|string[], k: number = 3, option
         .slice(0, Math.min(k, sentences.length))
         .sort((a, b) => a.index - b.index)
         .map(obj => obj.sentence)
-        .join(" ");
+        .join("\n");
 }
 
 export function relativeTextRank(
