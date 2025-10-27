@@ -1,7 +1,4 @@
 // src/util.ts
-function findDownsamplingRoot(dom) {
-  return dom.body ?? dom.documentElement ?? dom;
-}
 function resolveDocument(dom) {
   let doc;
   try {
@@ -15,6 +12,9 @@ function resolveDocument(dom) {
     doc = doc?.parentNode;
   }
   return null;
+}
+function resolveRoot(dom) {
+  return dom["outerHTML"] ? dom : dom?.documentElement;
 }
 async function traverseDom(doc, root, filter = NodeFilter.SHOW_ALL, cb) {
   doc = resolveDocument(doc);
@@ -434,27 +434,29 @@ async function d2Snap(dom, k, l, m, options = {}) {
       elementNode.removeAttribute(attr.name);
     }
   }
-  const originalSize = (dom?.outerHTML ?? dom?.documentElement.outerHTML).length;
-  const partialDom = findDownsamplingRoot(dom);
+  const document = resolveDocument(dom);
+  if (!document) throw new ReferenceError("Could not resolve a valid document object from DOM");
+  const rootElement = resolveRoot(dom);
+  const originalSize = rootElement.outerHTML.length;
   let n = 0;
   optionsWithDefaults.assignUniqueIDs && await traverseDom(
-    dom,
-    partialDom,
+    document,
+    rootElement,
     1 /* SHOW_ELEMENT */,
     (elementNode) => {
       if (!isElementType("container", elementNode.tagName) && !isElementType("interactive", elementNode.tagName)) return;
       elementNode.setAttribute(config_default.uniqueIDAttribute, (n++).toString());
     }
   );
-  const virtualDom = partialDom.cloneNode(true);
+  const virtualDom = rootElement.cloneNode(true);
   await traverseDom(
-    dom,
+    document,
     virtualDom,
     128 /* SHOW_COMMENT */,
     (node) => node.parentNode?.removeChild(node)
   );
   await traverseDom(
-    dom,
+    document,
     virtualDom,
     1 /* SHOW_ELEMENT */,
     (elementNode) => {
@@ -464,7 +466,7 @@ async function d2Snap(dom, k, l, m, options = {}) {
   );
   let domTreeHeight = 0;
   await traverseDom(
-    dom,
+    document,
     virtualDom,
     1 /* SHOW_ELEMENT */,
     (elementNode) => {
@@ -474,19 +476,19 @@ async function d2Snap(dom, k, l, m, options = {}) {
     }
   );
   await traverseDom(
-    dom,
+    document,
     virtualDom,
     4 /* SHOW_TEXT */,
     (node) => snapTextNode(node, l)
   );
   await traverseDom(
-    dom,
+    document,
     virtualDom,
     1 /* SHOW_ELEMENT */,
     (node) => snapElementNode(node)
   );
   await traverseDom(
-    dom,
+    document,
     virtualDom,
     1 /* SHOW_ELEMENT */,
     (node) => {
@@ -495,7 +497,7 @@ async function d2Snap(dom, k, l, m, options = {}) {
     }
   );
   await traverseDom(
-    dom,
+    document,
     virtualDom,
     1 /* SHOW_ELEMENT */,
     (node) => snapAttributeNode(node, m)
@@ -849,7 +851,7 @@ async function d2Snap2(dom, k, l, m, options = {}) {
 
 // src/AdaptiveD2Snap.ts
 async function adaptiveD2Snap(d2SnapFn, dom, maxTokens = 4096, maxIterations = 5, options = {}) {
-  const S = (!(typeof dom === "string") ? resolveDocument(dom).documentElement.outerHTML : dom).length;
+  const S = (typeof dom !== "string" ? resolveRoot(dom).outerHTML : dom).length;
   const M = 1e6;
   function* generateHalton() {
     const halton = (index, base) => {

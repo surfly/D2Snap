@@ -15,7 +15,7 @@ function readFile(fileName) {
 }
 
 async function readFileAsDOM(fileName) {
-    return await dynamicizeDOM(readFile(fileName));
+    return (await dynamicizeDOM(readFile(fileName))).body;
 }
 
 function readExpected(domName) {
@@ -81,14 +81,14 @@ await test("Take DOM snapshot (L) [DOM]", async () => {
 
     assertAlmostEqual(
         snapshot.meta.originalSize,
-        710,
+        680,
         -1,
         "Invalid DOM snapshot original size"
     );
 
     assertAlmostEqual(
         snapshot.meta.sizeRatio,
-        0.43,
+        0.45,
         2,
         "Invalid DOM snapshot size ratio"
     );
@@ -110,7 +110,7 @@ await test("Take DOM snapshot (M) [DOM]", async() => {
 
     assertAlmostEqual(
         snapshot.meta.sizeRatio,
-        0.21,
+        0.22,
         2,
         "Invalid DOM snapshot size ratio"
     );
@@ -132,7 +132,7 @@ await test("Take DOM snapshot (S) [DOM]", async () => {
 
     assertAlmostEqual(
         snapshot.meta.sizeRatio,
-        0.2,
+        0.21,
         2,
         "Invalid DOM snapshot size ratio"
     );
@@ -154,7 +154,7 @@ await test("Take DOM snapshot (linearized) [DOM]", async () => {
 
     assertAlmostEqual(
         snapshot.meta.sizeRatio,
-        0.36,
+        0.37,
         2,
         "Invalid DOM snapshot size ratio"
     );

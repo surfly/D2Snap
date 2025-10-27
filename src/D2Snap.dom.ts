@@ -1,5 +1,5 @@
 import { TextNode, HTMLElementDepth, DOM, D2SnapOptions, Snapshot, NodeFilter, Node } from "./types.ts";
-import { formatHtml, findDownsamplingRoot, traverseDom, resolveDocument } from "./util.ts";
+import { formatHtml, traverseDom, resolveDocument, resolveRoot } from "./util.ts";
 import { getAttributeSemantics, getContainerSemantics, isElementType } from "./ground-truth.ts";
 import { relativeTextRank } from "./TextRank.ts";
 import { KEEP_LINE_BREAK_MARK, turndown } from "./Turndown.ts";
@@ -158,17 +158,17 @@ export async function d2Snap(
         }
     }
 
-    const originalSize = (
-        (dom as HTMLElement)?.outerHTML
-        ?? (dom as Document)?.documentElement.outerHTML
-    ).length;
-    const partialDom: HTMLElement = findDownsamplingRoot(dom);
+    const document = resolveDocument(dom);
+    if(!document) throw new ReferenceError("Could not resolve a valid document object from DOM");
+
+    const rootElement: HTMLElement = resolveRoot(dom)
+    const originalSize = rootElement.outerHTML.length;
 
     let n = 0;
     optionsWithDefaults.assignUniqueIDs
         && await traverseDom<Element>(
-            dom,
-            partialDom,
+            document,
+            rootElement,
             NodeFilter.SHOW_ELEMENT,
             elementNode => {
                 if(
@@ -180,17 +180,17 @@ export async function d2Snap(
             }
         );
 
-    const virtualDom = partialDom.cloneNode(true) as HTMLElement;
+    const virtualDom = rootElement.cloneNode(true) as HTMLElement;
 
     // Prepare
     await traverseDom<Comment>(
-        dom,
+        document,
         virtualDom,
         NodeFilter.SHOW_COMMENT,
         node => node.parentNode?.removeChild(node)
     );
     await traverseDom<Element>(
-        dom,
+        document,
         virtualDom,
         NodeFilter.SHOW_ELEMENT,
         elementNode => {
@@ -204,7 +204,7 @@ export async function d2Snap(
 
     let domTreeHeight: number = 0;
     await traverseDom<Element>(
-        dom,
+        document,
         virtualDom,
         NodeFilter.SHOW_ELEMENT,
         elementNode => {
@@ -220,7 +220,7 @@ export async function d2Snap(
 
     // Text nodes first
     await traverseDom<TextNode>(
-        dom,
+        document,
         virtualDom,
         NodeFilter.SHOW_TEXT,
         (node: TextNode) => snapTextNode(node, l)
@@ -228,7 +228,7 @@ export async function d2Snap(
 
     // Non-container element nodes
     await traverseDom<HTMLElement>(
-        dom,
+        document,
         virtualDom,
         NodeFilter.SHOW_ELEMENT,
         (node: HTMLElement) => snapElementNode(node)
@@ -236,7 +236,7 @@ export async function d2Snap(
 
     // Container element nodes
     await traverseDom<HTMLElementDepth>(
-        dom,
+        document,
         virtualDom,
         NodeFilter.SHOW_ELEMENT,
         (node: HTMLElementDepth) => {
@@ -248,7 +248,7 @@ export async function d2Snap(
 
     // Attribute nodes
     await traverseDom<HTMLElement>(
-        dom,
+        document,
         virtualDom,
         NodeFilter.SHOW_ELEMENT,
         (node: HTMLElement) => snapAttributeNode(node, m)   // work on parent element

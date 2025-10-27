@@ -3,7 +3,7 @@
 // -------------------------------------
 
 import { DOM, D2SnapOptions, Snapshot } from "./types.ts";
-import { resolveDocument } from "./util.ts";
+import { resolveRoot } from "./util.ts";
 import { type d2Snap } from "./D2Snap.dom.ts";
 
 
@@ -20,8 +20,8 @@ export async function adaptiveD2Snap(
     }
 }> {
     const S = (
-        !(typeof(dom) === "string")
-            ? resolveDocument(dom)!.documentElement.outerHTML
+        (typeof(dom) !== "string")
+            ? resolveRoot(dom).outerHTML
             : dom
     ).length;
     const M = 1e6;
