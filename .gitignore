@@ -5,6 +5,7 @@
 node_modules/
 
 test/*.actual.html
+test/*.actual.serial.html
 
 snapshots/candidates
 
