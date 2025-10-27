@@ -1,0 +1,167 @@
+import { join } from "path";
+import { readFileSync, writeFileSync } from "fs";
+
+import { dynamicizeDOM } from "../dynamicize-dom.js";
+
+import { d2Snap, adaptiveD2Snap } from "../dist/api.js";
+
+
+function path(fileName) {
+    return join(import.meta.dirname, `${fileName}.html`);
+}
+
+function readFile(fileName) {
+    return readFileSync(path(fileName)).toString();
+}
+
+async function readFileAsDOM(fileName) {
+    return await dynamicizeDOM(readFile(fileName));
+}
+
+function readExpected(domName) {
+    return readFile(`${domName}.expected`);
+}
+
+function writeActual(domName, html) {
+    return writeFileSync(path(`${domName}.dom.actual`), html);
+}
+
+function flattenDOMSnapshot(snapshot) {
+    return snapshot
+        .trim()
+        .replace(/\s*(\n|\r)+\s*/g, "")
+        .replace(/\s{2,}/g, " ")
+        .replace(/\s+(?=<)|(?=>)\s+/g, "");
+}
+
+
+await test("Take adaptive DOM snapshot (4096) [DOM]", async () => {
+    const snapshot = await adaptiveD2Snap(await readFileAsDOM("agents"), 4096, 5, {
+        debug: true,
+        assignUniqueIDs: true
+    });
+
+    writeActual("agents.4096", snapshot.serializedHtml);
+
+    assertLess(
+        snapshot.serializedHtml.length / 4,
+        4096,
+        "Invalid adaptive DOM snapshot size"
+    );
+
+    assertIn(
+        flattenDOMSnapshot("<a href=\"/about\" data-uid=\"7\">About</a>"),
+        flattenDOMSnapshot(snapshot.serializedHtml),
+        "Interactive element not preserved"
+    );
+});
+
+await test("Take adaptive DOM snapshot (2048) [DOM]", async() => {
+    const snapshot = await adaptiveD2Snap(await readFileAsDOM("agents"), 2048, 5, {
+        debug: true,
+        assignUniqueIDs: true
+    });
+
+    writeActual("agents.2048", snapshot.serializedHtml);
+
+    assertLess(
+        snapshot.serializedHtml.length / 4,
+        2048,
+        "Invalid adaptive DOM snapshot size"
+    );
+});
+
+await test("Take DOM snapshot (L) [DOM]", async () => {
+    const snapshot = await d2Snap(await readFileAsDOM("pizza"), 0.3, 0.3, 0.3, {
+        debug: true
+    });
+
+    writeActual("pizza.l", snapshot.serializedHtml);
+    const expected = readExpected("pizza.l");
+
+    assertAlmostEqual(
+        snapshot.meta.originalSize,
+        710,
+        -1,
+        "Invalid DOM snapshot original size"
+    );
+
+    assertAlmostEqual(
+        snapshot.meta.sizeRatio,
+        0.43,
+        2,
+        "Invalid DOM snapshot size ratio"
+    );
+
+    assertEqual(
+        flattenDOMSnapshot(snapshot.serializedHtml),
+        flattenDOMSnapshot(expected),
+        "Invalid DOM snapshot"
+    );
+});
+
+await test("Take DOM snapshot (M) [DOM]", async() => {
+    const snapshot = await d2Snap(await readFileAsDOM("pizza"), 0.4, 0.6, 0.8, {
+        debug: true
+    });
+
+    writeActual("pizza.m", snapshot.serializedHtml);
+    const expected = readExpected("pizza.m");
+
+    assertAlmostEqual(
+        snapshot.meta.sizeRatio,
+        0.21,
+        2,
+        "Invalid DOM snapshot size ratio"
+    );
+
+    assertEqual(
+        flattenDOMSnapshot(snapshot.serializedHtml),
+        flattenDOMSnapshot(expected),
+        "Invalid DOM snapshot"
+    );
+});
+
+await test("Take DOM snapshot (S) [DOM]", async () => {
+    const snapshot = await d2Snap(await readFileAsDOM("pizza"), 1.0, 1.0, 1.0, {
+        debug: true
+    });
+
+    writeActual("pizza.s", snapshot.serializedHtml);
+    const expected = readExpected("pizza.s");
+
+    assertAlmostEqual(
+        snapshot.meta.sizeRatio,
+        0.2,
+        2,
+        "Invalid DOM snapshot size ratio"
+    );
+
+    assertEqual(
+        flattenDOMSnapshot(snapshot.serializedHtml),
+        flattenDOMSnapshot(expected),
+        "Invalid DOM snapshot"
+    );
+});
+
+await test("Take DOM snapshot (linearized) [DOM]", async () => {
+    const snapshot = await d2Snap(await readFileAsDOM("pizza"), Infinity, 0, 1.0, {
+        debug: true
+    });
+
+    writeActual("pizza.lin", snapshot.serializedHtml);
+    const expected = readExpected("pizza.lin");
+
+    assertAlmostEqual(
+        snapshot.meta.sizeRatio,
+        0.36,
+        2,
+        "Invalid DOM snapshot size ratio"
+    );
+
+    assertEqual(
+        flattenDOMSnapshot(snapshot.serializedHtml),
+        flattenDOMSnapshot(expected),
+        "Invalid DOM snapshot"
+    );
+});

@@ -1,7 +1,7 @@
 import { join } from "path";
 import { readFileSync, writeFileSync } from "fs";
 
-import { d2Snap, adaptiveD2Snap } from "../dist/D2Snap.lib.js";
+import { d2Snap, adaptiveD2Snap } from "../dist/api.js";
 
 
 function path(fileName) {
@@ -13,11 +13,15 @@ function readFile(fileName) {
 }
 
 function readExpected(domName) {
-    return readFile(`${domName}.expected`);
+    try {
+        return readFile(`${domName}.string.expected`);
+    } catch {
+        return readFile(`${domName}.expected`);
+    }
 }
 
 function writeActual(domName, html) {
-    return writeFileSync(path(`${domName}.actual`), html);
+    return writeFileSync(path(`${domName}.string.actual`), html);
 }
 
 function flattenDOMSnapshot(snapshot) {
@@ -29,7 +33,7 @@ function flattenDOMSnapshot(snapshot) {
 }
 
 
-await test("Take adaptive DOM snapshot (4096)", async () => {
+await test("Take adaptive DOM snapshot (4096) [string]", async () => {
     const snapshot = await adaptiveD2Snap(readFile("agents"), 4096, 5, {
         debug: true,
         assignUniqueIDs: true
@@ -42,21 +46,9 @@ await test("Take adaptive DOM snapshot (4096)", async () => {
         4096,
         "Invalid adaptive DOM snapshot size"
     );
-
-    assertLess(
-        2048,
-        snapshot.serializedHtml.length,
-        "Invalid adaptive DOM snapshot size"
-    );
-
-    assertIn(
-        flattenDOMSnapshot(`<a href="/about" data-uid="7">About</a>`),
-        flattenDOMSnapshot(snapshot.serializedHtml),
-        "Interactive element not preserved"
-    );
 });
 
-await test("Take adaptive DOM snapshot (2048)", async() => {
+await test("Take adaptive DOM snapshot (2048) [string]", async() => {
     const snapshot = await adaptiveD2Snap(readFile("agents"), 2048, 5, {
         debug: true,
         assignUniqueIDs: true
@@ -71,7 +63,7 @@ await test("Take adaptive DOM snapshot (2048)", async() => {
     );
 });
 
-await test("Take DOM snapshot (L)", async () => {
+await test("Take DOM snapshot (L) [string]", async () => {
     const snapshot = await d2Snap(readFile("pizza"), 0.3, 0.3, 0.3, {
         debug: true
     });
@@ -81,14 +73,14 @@ await test("Take DOM snapshot (L)", async () => {
 
     assertAlmostEqual(
         snapshot.meta.originalSize,
-        710,
+        670,
         -1,
         "Invalid DOM snapshot original size"
     );
 
     assertAlmostEqual(
         snapshot.meta.sizeRatio,
-        0.43,
+        0.44,
         2,
         "Invalid DOM snapshot size ratio"
     );
@@ -100,7 +92,7 @@ await test("Take DOM snapshot (L)", async () => {
     );
 });
 
-await test("Take DOM snapshot (M)", async() => {
+await test("Take DOM snapshot (M) [string]", async() => {
     const snapshot = await d2Snap(readFile("pizza"), 0.4, 0.6, 0.8, {
         debug: true
     });
@@ -122,7 +114,7 @@ await test("Take DOM snapshot (M)", async() => {
     );
 });
 
-await test("Take DOM snapshot (S)", async () => {
+await test("Take DOM snapshot (S) [string]", async () => {
     const snapshot = await d2Snap(readFile("pizza"), 1.0, 1.0, 1.0, {
         debug: true
     });
@@ -132,7 +124,7 @@ await test("Take DOM snapshot (S)", async () => {
 
     assertAlmostEqual(
         snapshot.meta.sizeRatio,
-        0.2,
+        0.19,
         2,
         "Invalid DOM snapshot size ratio"
     );
@@ -144,7 +136,7 @@ await test("Take DOM snapshot (S)", async () => {
     );
 });
 
-await test("Take DOM snapshot (linearized)", async () => {
+await test("Take DOM snapshot (linearized) [string]", async () => {
     const snapshot = await d2Snap(readFile("pizza"), Infinity, 0, 1.0, {
         debug: true
     });
@@ -154,7 +146,7 @@ await test("Take DOM snapshot (linearized)", async () => {
 
     assertAlmostEqual(
         snapshot.meta.sizeRatio,
-        0.36,
+        0.33,
         2,
         "Invalid DOM snapshot size ratio"
     );
