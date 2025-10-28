@@ -4,7 +4,7 @@ import { getAttributeSemantics, getContainerSemantics, isElementType } from "./g
 import { relativeTextRank } from "./TextRank.ts";
 import { KEEP_LINE_BREAK_MARK, turndown } from "./Turndown.ts";
 import { NodeType, AttributeNode, ElementNode, HTMLParserTransformer } from "./HTMLParserTransformer.ts";
-import { validateD2Snap } from "./D2Snap.ts";
+import * as d2SnapUtil from "./D2Snap.util.ts";
 
 
 const FILTER_CONTENT_TAG_NAMES = [
@@ -122,12 +122,16 @@ function dissolveParentHTMLTag(html: string): string {
 }
 
 
+const OMITTED_OPTION_KEYS = "assignUniqueIDs";
+
 export async function d2Snap(
     dom: string,
     k: number, l: number, m: number,
-    options: Omit<D2SnapOptions, "assignUniqueIDs"> = {}
+    options: Omit<D2SnapOptions, typeof OMITTED_OPTION_KEYS> = {}
 ): Promise<Snapshot> {
-    validateD2Snap(k, l, m);
+    d2SnapUtil.validateParams(k, l, m);
+
+    const optionsWithDefaults = d2SnapUtil.getOptionsWithDefaults<typeof OMITTED_OPTION_KEYS>(options);
 
     const domTreeHeight = estimateDomTreeHeight(dom);
     const mergeLevels: number = Math.max(Math.round(domTreeHeight * (Math.min(1, k))), 1);
@@ -165,7 +169,9 @@ export async function d2Snap(
                 return element;
             }
 
-            return element;
+            if(optionsWithDefaults.keepUnknownElements) return element;
+
+            return null;
         }
     });
 
@@ -178,7 +184,9 @@ export async function d2Snap(
     }
 
     return {
-        serializedHtml: options.debug ? formatHtml(snapshot) : snapshot,
+        serializedHtml: optionsWithDefaults.debug
+            ? formatHtml(snapshot)
+            : snapshot,
         meta: {
             originalSize: dom.length,
             snapshotSize: snapshot.length,

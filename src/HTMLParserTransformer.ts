@@ -141,21 +141,24 @@ export class HTMLParserTransformer {
         const stack: ElementNode[] = [];
         const dom: DOM = [];
 
-        const finalizeElement = async(el: ElementNode, container: DOM): Promise<void> => {
-            let result = await this.transformCallbacks.onElement(el);
-            result = typeof(result) === "string"
+        const finalizeElement = async(elementNode: ElementNode, container: DOM): Promise<void> => {
+            const result = await this.transformCallbacks.onElement(elementNode);
+            const resultElement = typeof(result) === "string"
                 ? await HTMLParserTransformer.parseNode(result)
                 : result;
 
-            if(result === el) return;
+            if(resultElement === elementNode) return;
 
-            const parent: ElementNode | undefined = el.parentElement;
+            const parent: ElementNode | undefined = elementNode.parentElement;
             const target: DOM = parent ? parent.children : container;
-            const idx: number = target.indexOf(el);
+            const elementIndex: number = target.indexOf(elementNode);
 
-            if(idx !== -1) {
-                if(result === null) target.splice(idx, 1);
-                else target[idx] = result;
+            if(elementIndex === -1) return;
+
+            if(resultElement === null) {
+                target.splice(elementIndex, 1);
+            } else {
+                target[elementIndex] = resultElement;
             }
         };
 
@@ -170,9 +173,12 @@ export class HTMLParserTransformer {
                 };
 
                 let writeTxtNode = await this.transformCallbacks.onText(txtNode);
-                if(writeTxtNode) {
-                    if(stack.length > 0) stack[stack.length - 1].children.push(writeTxtNode);
-                    else dom.push(writeTxtNode);
+                if(!writeTxtNode) continue;
+
+                if(stack.length > 0) {
+                    stack[stack.length - 1].children.push(writeTxtNode);
+                } else {
+                    dom.push(writeTxtNode);
                 }
 
                 continue;
@@ -180,6 +186,7 @@ export class HTMLParserTransformer {
 
             if(this.#html.startsWith("<!--", this.index)) {
                 this.skipComment();
+
                 continue;
             }
 
@@ -195,6 +202,7 @@ export class HTMLParserTransformer {
                 if(!closedElementNode) continue;
 
                 await finalizeElement(closedElementNode, dom);
+
                 continue;
             }
 
@@ -211,7 +219,9 @@ export class HTMLParserTransformer {
 
             if(stack.length > 0) {
                 const parentElement: ElementNode = stack[stack.length - 1];
+
                 parentElement.children.push(elementNode);
+
                 elementNode.parentElement = parentElement;
             } else {
                 dom.push(elementNode);
@@ -219,6 +229,7 @@ export class HTMLParserTransformer {
 
             if(!selfClosing && !isVoid) {
                 stack.push(elementNode);
+
                 this.depth++;
             } else {
                 await finalizeElement(elementNode, dom);

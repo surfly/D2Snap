@@ -20,6 +20,8 @@ document
 
         console.log("Raw DOM snapshot:\n", dom.outerHTML);
 
+        const t0 = performance.now();
+
         await presentSnapshot({ k: 0.7, l: 0.7, m: 0.7 });
         await presentSnapshot({ k: 0.2, l: 0.4, m: 0.6 });
         await presentSnapshot(null, () => D2Snap.adaptiveD2Snap(
@@ -29,4 +31,6 @@ document
                 assignUniqueIDs: true
             })
         );
+
+        console.debug(`... ${performance.now() - t0}ms`);
     });

@@ -58,8 +58,7 @@ await test("Take adaptive DOM snapshot (4096) [DOM]", async () => {
 
 await test("Take adaptive DOM snapshot (2048) [DOM]", async() => {
     const snapshot = await adaptiveD2Snap(await readFileAsDOM("agents"), 2048, 5, {
-        debug: true,
-        assignUniqueIDs: true
+        debug: true
     });
 
     writeActual("agents.2048", snapshot.serializedHtml);
@@ -158,6 +157,37 @@ await test("Take DOM snapshot (linearized) [DOM]", async () => {
         2,
         "Invalid DOM snapshot size ratio"
     );
+
+    assertEqual(
+        flattenDOMSnapshot(snapshot.serializedHtml),
+        flattenDOMSnapshot(expected),
+        "Invalid DOM snapshot"
+    );
+});
+
+await test("Take DOM snapshot (options.keepUnknownElements = false) [DOM]", async () => {
+    const snapshot = await d2Snap(await readFileAsDOM("custom"), Infinity, 0, 1.0, {
+        debug: true
+    });
+
+    writeActual("custom", snapshot.serializedHtml);
+    const expected = readExpected("custom");
+
+    assertEqual(
+        flattenDOMSnapshot(snapshot.serializedHtml),
+        flattenDOMSnapshot(expected),
+        "Invalid DOM snapshot"
+    );
+});
+
+await test("Take DOM snapshot (options.keepUnknownElements = true) [DOM]", async () => {
+    const snapshot = await d2Snap(await readFileAsDOM("custom"), Infinity, 0, 1.0, {
+        debug: true,
+        keepUnknownElements: true,
+    });
+
+    writeActual("custom.keep", snapshot.serializedHtml);
+    const expected = readExpected("custom.keep");
 
     assertEqual(
         flattenDOMSnapshot(snapshot.serializedHtml),

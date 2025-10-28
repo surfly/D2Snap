@@ -1166,17 +1166,25 @@
     return SERVICE.turndown(markup).trim().replace(/\n|$/g, KEEP_LINE_BREAK_MARK);
   }
 
-  // src/D2Snap.ts
-  function validateParam(param, allowInfinity = false) {
-    if (allowInfinity && param === Infinity) return;
-    if (param < 0 || param > 1) {
-      throw new RangeError(`Invalid parameter ${param}, expects value in [0, 1]`);
-    }
-  }
-  async function validateD2Snap(k = 0.4, l = 0.5, m = 0.6) {
+  // src/D2Snap.util.ts
+  async function validateParams(k, l, m) {
+    const validateParam = (param, allowInfinity = false) => {
+      if (allowInfinity && param === Infinity) return;
+      if (param < 0 || param > 1) {
+        throw new RangeError(`Invalid parameter ${param}, expects value in [0, 1]`);
+      }
+    };
     validateParam(k, true);
     validateParam(l);
     validateParam(m);
+  }
+  function getOptionsWithDefaults(options) {
+    return {
+      assignUniqueIDs: false,
+      debug: false,
+      keepUnknownElements: false,
+      ...options
+    };
   }
 
   // src/config.json
@@ -1191,12 +1199,8 @@
     "LINK"
   ];
   async function d2Snap(dom, k, l, m, options = {}) {
-    validateD2Snap(k, l, m);
-    const optionsWithDefaults = {
-      debug: false,
-      assignUniqueIDs: false,
-      ...options
-    };
+    validateParams(k, l, m);
+    const optionsWithDefaults = getOptionsWithDefaults(options);
     function snapElementNode(elementNode) {
       if (isElementType("container", elementNode.tagName)) return;
       if (isElementType("content", elementNode.tagName)) {
@@ -1206,6 +1210,7 @@
         snapElementInteractiveNode(elementNode);
         return;
       }
+      if (optionsWithDefaults.keepUnknownElements) return;
       elementNode.parentNode?.removeChild(elementNode);
     }
     function snapElementContainerNode(elementNode, k2, domTreeHeight2) {
@@ -1449,16 +1454,18 @@
       const len = html.length;
       const stack = [];
       const dom = [];
-      const finalizeElement = async (el, container) => {
-        let result = await this.transformCallbacks.onElement(el);
-        result = typeof result === "string" ? await _HTMLParserTransformer.parseNode(result) : result;
-        if (result === el) return;
-        const parent = el.parentElement;
+      const finalizeElement = async (elementNode, container) => {
+        const result = await this.transformCallbacks.onElement(elementNode);
+        const resultElement = typeof result === "string" ? await _HTMLParserTransformer.parseNode(result) : result;
+        if (resultElement === elementNode) return;
+        const parent = elementNode.parentElement;
         const target = parent ? parent.children : container;
-        const idx = target.indexOf(el);
-        if (idx !== -1) {
-          if (result === null) target.splice(idx, 1);
-          else target[idx] = result;
+        const elementIndex = target.indexOf(elementNode);
+        if (elementIndex === -1) return;
+        if (resultElement === null) {
+          target.splice(elementIndex, 1);
+        } else {
+          target[elementIndex] = resultElement;
         }
       };
       while (this.index < len) {
@@ -1470,9 +1477,11 @@
             textContent: text
           };
           let writeTxtNode = await this.transformCallbacks.onText(txtNode);
-          if (writeTxtNode) {
-            if (stack.length > 0) stack[stack.length - 1].children.push(writeTxtNode);
-            else dom.push(writeTxtNode);
+          if (!writeTxtNode) continue;
+          if (stack.length > 0) {
+            stack[stack.length - 1].children.push(writeTxtNode);
+          } else {
+            dom.push(writeTxtNode);
           }
           continue;
         }
@@ -1650,7 +1659,8 @@
     return match ? match[3].trim() : html;
   }
   async function d2Snap2(dom, k, l, m, options = {}) {
-    validateD2Snap(k, l, m);
+    validateParams(k, l, m);
+    const optionsWithDefaults = getOptionsWithDefaults(options);
     const domTreeHeight = estimateDomTreeHeight(dom);
     const mergeLevels = Math.max(Math.round(domTreeHeight * Math.min(1, k)), 1);
     const parserTransformer = new HTMLParserTransformer({
@@ -1683,7 +1693,7 @@
       snapshot = dissolveParentHTMLTag(snapshot);
     }
     return {
-      serializedHtml: options.debug ? formatHtml(snapshot) : snapshot,
+      serializedHtml: optionsWithDefaults.debug ? formatHtml(snapshot) : snapshot,
       meta: {
         originalSize: dom.length,
         snapshotSize: snapshot.length,

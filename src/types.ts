@@ -22,19 +22,20 @@ export type HTMLElementDepth = HTMLElement & {
     depth: number;
 };
 
-export type D2SnapOptions = {
-    debug?: boolean;
-    assignUniqueIDs?: boolean;
-};
-
 export type DOM = Document | HTMLElement;
 
+export type D2SnapOptions = {
+    assignUniqueIDs?: boolean;
+    debug?: boolean;
+    keepUnknownElements?: boolean;
+};
+
 export type Snapshot = {
-    serializedHtml: string;
     meta: {
-        originalSize: number;
-        snapshotSize: number;
-        sizeRatio: number;
         estimatedTokens: number;
+        originalSize: number;
+        sizeRatio: number;
+        snapshotSize: number;
     }
+    serializedHtml: string;
 };

@@ -3,7 +3,7 @@ import { formatHtml, traverseDom, resolveDocument, resolveRoot } from "./util.ts
 import { getAttributeSemantics, getContainerSemantics, isElementType } from "./ground-truth.ts";
 import { relativeTextRank } from "./TextRank.ts";
 import { KEEP_LINE_BREAK_MARK, turndown } from "./Turndown.ts";
-import { validateD2Snap } from "./D2Snap.ts";
+import * as d2SnapUtil from "./D2Snap.util.ts";
 
 import CONFIG from "./config.json" with { type: "json" };
 
@@ -20,14 +20,9 @@ export async function d2Snap(
     k: number, l: number, m: number,
     options: D2SnapOptions = {}
 ): Promise<Snapshot> {
-    validateD2Snap(k, l, m);
+    d2SnapUtil.validateParams(k, l, m);
 
-    const optionsWithDefaults = {
-        debug: false,
-        assignUniqueIDs: false,
-
-        ...options
-    }
+    const optionsWithDefaults = d2SnapUtil.getOptionsWithDefaults(options);
 
     function snapElementNode(elementNode: HTMLElement) {
         if(isElementType("container", elementNode.tagName)) return;
@@ -40,6 +35,8 @@ export async function d2Snap(
 
             return;
         }
+
+        if(optionsWithDefaults.keepUnknownElements) return;
 
         elementNode
             .parentNode
