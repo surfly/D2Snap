@@ -14,6 +14,7 @@ function isDOMString(domOrString: DOM | string): boolean {
 }
 
 
+// TODO: Force hydration argument? 
 export async function d2Snap(
     domOrString: DOM | string,
     ...args: Parameters<typeof _d2SnapDOM> extends [ unknown, ...infer T ] ? T : never

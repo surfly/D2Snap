@@ -5,6 +5,9 @@ import { dynamicizeDOM } from "../dynamicize-dom.js";
 import { d2Snap } from "../dist/api.js";
 
 
+const DOM = await readFileAsDOM("./subject.html");
+
+
 async function readFileAsDOM(path) {
     return (await dynamicizeDOM(
         readFileSync(
@@ -15,5 +18,5 @@ async function readFileAsDOM(path) {
 
 
 export default async function() {
-    return d2Snap(await readFileAsDOM("./subject.html"));
+    return d2Snap(DOM);
 }

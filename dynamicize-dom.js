@@ -8,7 +8,7 @@ export async function dynamicizeDOM(domString) {
 
         return dynamicDOM.window.document;
     } catch(err) {
-        console.error(err);
+        if(err.code !== "ERR_MODULE_NOT_FOUND") throw err;
 
         throw new ReferenceError("Install 'jsdom' to use D2Snap with Node.js");
     }
