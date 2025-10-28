@@ -1,10 +1,9 @@
 {
-  "private": true,
   "name": "@surfly/d2snap",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Thassilo M. Schiepanski",
   "type": "module",
-  "main": "./dist/D2Snap.lib.js",
+  "main": "./dist/api.js",
   "scripts": {
     "build:lib": "npx esbuild ./src/api.ts --bundle --outfile=./dist/api.js --platform=node --packages=external --format=esm --target=es2022",
     "build:lib:watch": "npm run build:lib -- --watch",
