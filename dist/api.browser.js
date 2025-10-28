@@ -1685,7 +1685,8 @@
           }, mergeLevels);
           return element;
         }
-        return element;
+        if (optionsWithDefaults.keepUnknownElements) return element;
+        return null;
       }
     });
     let snapshot = (await parserTransformer.parse(dom)).html.replace(new RegExp(KEEP_LINE_BREAK_MARK, "g"), "\n");
