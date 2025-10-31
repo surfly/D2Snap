@@ -339,6 +339,7 @@ function getOptionsWithDefaults(options) {
     assignUniqueIDs: false,
     debug: false,
     keepUnknownElements: false,
+    skipMarkdownTranslation: false,
     ...options
   };
 }
@@ -419,6 +420,7 @@ async function d2Snap(dom, k, l, m, options = {}) {
   function snapElementContentNode(elementNode) {
     if (elementNode.nodeType !== 1 /* ELEMENT_NODE */) return;
     if (!isElementType("content", elementNode.tagName)) return;
+    if (optionsWithDefaults.skipMarkdownTranslation) return;
     const markdown = turndown(elementNode.outerHTML);
     const markdownNodesFragment = resolveDocument(dom).createRange().createContextualFragment(markdown);
     elementNode.replaceWith(...markdownNodesFragment.childNodes);
@@ -832,7 +834,9 @@ async function d2Snap2(dom, k, l, m, options = {}) {
       }
       if (isElementType("interactive", element.tagName)) return element;
       if (isElementType("content", element.tagName)) {
-        return !FILTER_CONTENT_TAG_NAMES.includes(element.tagName.toUpperCase()) ? turndown(HTMLParserTransformer.outerHTML([element])) : element;
+        if (FILTER_CONTENT_TAG_NAMES.includes(element.tagName.toUpperCase())) return element;
+        if (optionsWithDefaults.skipMarkdownTranslation) return element;
+        return turndown(HTMLParserTransformer.outerHTML([element]));
       }
       if (isElementType("container", element.tagName)) {
         if (element.depth % mergeLevels > 0) return element;

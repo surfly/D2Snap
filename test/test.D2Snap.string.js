@@ -157,7 +157,7 @@ await test("Take DOM snapshot (linearized) [string]", async () => {
     );
 });
 
-await test("Take DOM snapshot (options.keepUnknownElements = false) [DOM]", async () => {
+await test("Take DOM snapshot (options.keepUnknownElements = false) [string]", async () => {
     const snapshot = await d2Snap(await readFile("custom"), Infinity, 0, 1.0, {
         debug: true
     });
@@ -172,14 +172,30 @@ await test("Take DOM snapshot (options.keepUnknownElements = false) [DOM]", asyn
     );
 });
 
-await test("Take DOM snapshot (options.keepUnknownElements = true) [DOM]", async () => {
+await test("Take DOM snapshot (options.keepUnknownElements = true) [string]", async () => {
     const snapshot = await d2Snap(await readFile("custom"), Infinity, 0, 1.0, {
         debug: true,
-        keepUnknownElements: true,
+        keepUnknownElements: true
     });
 
     writeActual("custom.keep", snapshot.serializedHtml);
     const expected = readExpected("custom.keep");
+
+    assertEqual(
+        flattenDOMSnapshot(snapshot.serializedHtml),
+        flattenDOMSnapshot(expected),
+        "Invalid DOM snapshot"
+    );
+});
+
+await test("Take DOM snapshot (options.skipMarkdownTranslation = true) [string]", async () => {
+    const snapshot = await d2Snap(await readFile("markdown"), Infinity, 0, 1.0, {
+        debug: true,
+        skipMarkdownTranslation: true
+    });
+
+    writeActual("markdown.keep", snapshot.serializedHtml);
+    const expected = readExpected("markdown.skip");
 
     assertEqual(
         flattenDOMSnapshot(snapshot.serializedHtml),

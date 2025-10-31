@@ -28,6 +28,7 @@ export type D2SnapOptions = {
     assignUniqueIDs?: boolean;
     debug?: boolean;
     keepUnknownElements?: boolean;
+    skipMarkdownTranslation?: boolean;
 };
 
 export type Snapshot = {

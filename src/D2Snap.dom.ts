@@ -119,6 +119,7 @@ export async function d2Snap(
     function snapElementContentNode(elementNode: HTMLElement) {
         if(elementNode.nodeType !== Node.ELEMENT_NODE) return;
         if(!isElementType("content", elementNode.tagName)) return;
+        if(optionsWithDefaults.skipMarkdownTranslation) return;
 
         // markdown
         const markdown = turndown(elementNode.outerHTML);

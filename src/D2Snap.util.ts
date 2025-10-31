@@ -24,6 +24,7 @@ export function getOptionsWithDefaults<
         assignUniqueIDs: false,
         debug: false,
         keepUnknownElements: false,
+        skipMarkdownTranslation: false,
 
         ...options
     }

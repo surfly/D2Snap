@@ -153,9 +153,10 @@ export async function d2Snap(
             if(isElementType("interactive", element.tagName)) return element;
 
             if(isElementType("content", element.tagName)) {
-                return !FILTER_CONTENT_TAG_NAMES.includes(element.tagName.toUpperCase())
-                    ? turndown(HTMLParserTransformer.outerHTML([ element ]))
-                    : element;
+                if(FILTER_CONTENT_TAG_NAMES.includes(element.tagName.toUpperCase())) return element;
+                if(optionsWithDefaults.skipMarkdownTranslation) return element;
+
+                return turndown(HTMLParserTransformer.outerHTML([ element ]));
             }
 
             if(isElementType("container", element.tagName)) {
